@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { FiBookOpen, FiCheck, FiCreditCard, FiEdit2, FiLoader, FiPlus, FiSave, FiShield, FiSliders, FiTrash2, FiZap } from "react-icons/fi";
-import { adminApi, ApiError, type BusinessRuleTemplate, type CapabilityInput, type EntitlementDefinition, type EntitlementValue, type PlanInput, type PricingCatalog, type SubscriberTransition, type SubscriptionPlan, type SupportedLocale } from "../api";
+import { adminApi, ApiError, type BusinessRuleTemplate, type CapabilityInput, type EntitlementDefinition, type EntitlementValue, type PlanInput, type PlatformCommerceSettings, type PricingCatalog, type SubscriberTransition, type SubscriptionPlan, type SupportedLocale } from "../api";
 import { ConfirmDialog, ErrorState, Loading, PageHeader, formatDate } from "../components/Ui";
 import { useI18n } from "../i18n";
 import { normalizePlanEntitlements, validatePlanOffer, type PlanOfferIssue } from "../planEditor";
@@ -89,10 +89,12 @@ export function PricingPage() {
   const [publishConfirmed, setPublishConfirmed] = useState(false);
   const [subscriberTransition, setSubscriberTransition] = useState<SubscriberTransition | "">("");
   const [pendingDelete, setPendingDelete] = useState<SubscriptionPlan | null>(null);
+  const [commerce, setCommerce] = useState<PlatformCommerceSettings | null>(null);
+  const [commerceSaving, setCommerceSaving] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true); setError("");
-    return adminApi.pricing().then(setData).catch(() => setError(tr("common.unavailableDetail"))).finally(() => setLoading(false));
+    return Promise.all([adminApi.pricing(), adminApi.commerceSettings()]).then(([catalog, policy]) => { setData(catalog); setCommerce(policy); }).catch(() => setError(tr("common.unavailableDetail"))).finally(() => setLoading(false));
   }, []);
   useEffect(() => { void load(); }, [load]);
 
@@ -188,9 +190,19 @@ export function PricingPage() {
   const editing = typeof selected === "number" ? data.plans.find((plan) => plan.id === selected) : null;
   const activeCapabilities = data.capabilities.filter((item) => item.is_active);
   const availableRules = data.rule_templates.filter((item) => !item.configured);
+  const trialCopy = {
+    en: { eyebrow: "Conversion policy", title: "Free trial deadline", detail: "New Free accounts receive one trial. When it ends, dashboard features and the public storefront stay paused until a paid pack is confirmed.", length: "Trial length", days: "days", save: "Save trial policy" },
+    fr: { eyebrow: "Politique de conversion", title: "Échéance de l’essai gratuit", detail: "Les nouveaux comptes gratuits reçoivent un seul essai. À son terme, le tableau de bord et la boutique publique restent suspendus jusqu’à confirmation d’un forfait payant.", length: "Durée de l’essai", days: "jours", save: "Enregistrer la politique" },
+    ar: { eyebrow: "سياسة التحويل", title: "مدة التجربة المجانية", detail: "يحصل كل حساب مجاني جديد على تجربة واحدة. عند انتهائها، تتوقف ميزات لوحة التحكم والمتجر العام إلى أن يتم تأكيد باقة مدفوعة.", length: "مدة التجربة", days: "يومًا", save: "حفظ سياسة التجربة" },
+  }[locale];
 
   return <>
     <PageHeader eyebrow={tr("pricing.eyebrow")} title={tr("nav.pricing")} detail={tr("pricing.detail")} />
+    {commerce && <section className="panel free-trial-policy">
+      <div><span className="eyebrow">{trialCopy.eyebrow}</span><h2>{trialCopy.title}</h2><p>{trialCopy.detail}</p></div>
+      <label><span>{trialCopy.length}</span><div><input type="number" min="1" max="365" value={commerce.free_trial_days} onChange={(event) => setCommerce({ ...commerce, free_trial_days: Number(event.target.value) })} /><small>{trialCopy.days}</small></div></label>
+      <button className="button" disabled={commerceSaving} onClick={async () => { setCommerceSaving(true); setError(""); try { setCommerce(await adminApi.updateCommerceSettings({ free_trial_days: commerce.free_trial_days })); setSaved(true); } catch (reason) { setError(reason instanceof Error ? reason.message : tr("pricing.saveFailed")); } finally { setCommerceSaving(false); } }}><FiSave /> {commerceSaving ? tr("pricing.saving") : trialCopy.save}</button>
+    </section>}
     <section className="pricing-toolbar">
       <article className="provider-card">
         <span className="provider-icon"><FiCreditCard /></span>

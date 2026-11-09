@@ -44,6 +44,7 @@ export interface PlatformMonitoring {
   updated_at: string;
   incidents: Array<{ key: string; label: string; count: number }>;
 }
+export interface PlatformCommerceSettings { free_trial_days: number; updated_at: string; }
 
 export interface StaffMember {
   id: number;
@@ -403,6 +404,10 @@ export const adminApi = {
     method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
   }),
   testMonitoring: () => request<PlatformMonitoring>("/api/platform-admin/monitoring/test", { method: "POST" }),
+  commerceSettings: () => request<PlatformCommerceSettings>("/api/platform-admin/commerce-settings"),
+  updateCommerceSettings: (payload: Pick<PlatformCommerceSettings, "free_trial_days">) => request<PlatformCommerceSettings>("/api/platform-admin/commerce-settings", {
+    method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+  }),
   overview: () => request<Overview>("/api/platform-admin/overview"),
   stores: (params: Record<string, string | number | undefined>) => request<Paginated<StoreRow>>(query("/api/platform-admin/stores", params)),
   users: (params: Record<string, string | number | undefined>) => request<Paginated<UserRow>>(query("/api/platform-admin/users", params)),

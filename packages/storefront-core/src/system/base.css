@@ -169,13 +169,27 @@ body { margin: 0; }
 }
 .ds-store-unavailable {
   min-height: 100dvh;
-  padding: 12vh 8vw;
-  background: #fbfaf7;
-  color: #181816;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 48px 24px;
+  background: radial-gradient(circle at 50% 18%, #ecfeff 0, #f8fafc 34%, #f5f3ff 100%);
+  color: #102a2b;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   text-align: center;
 }
-.ds-store-unavailable h1 { margin: 0 0 8px; font-size: 1.5rem; }
+.ds-store-unavailable-mark { width: 72px; height: 72px; display: grid; place-items: center; margin-bottom: 24px; border-radius: 24px; background: #fff; box-shadow: 0 20px 50px rgba(15, 76, 78, .14); transform: rotate(-4deg); }
+.ds-store-unavailable-mark span { width: 28px; height: 28px; border: 3px solid #1f8a8c; border-radius: 50% 50% 48% 52%; position: relative; }
+.ds-store-unavailable-mark span::after { content: ""; position: absolute; width: 9px; height: 9px; inset: 7px; border-radius: 50%; background: #20c6c8; }
+.ds-store-unavailable-name { margin-bottom: 8px; font-size: 14px; letter-spacing: .02em; }
+.ds-store-unavailable-eyebrow { color: #1f8a8c; font-size: 12px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
+.ds-store-unavailable h1 { max-width: 620px; margin: 14px 0 12px; font: 650 clamp(2rem, 6vw, 4.25rem)/1.03 Georgia, serif; letter-spacing: -.035em; }
+.ds-store-unavailable p { max-width: 540px; margin: 0; color: #526667; font-size: 16px; line-height: 1.7; }
+.ds-store-unavailable button { min-height: 44px; margin-top: 28px; padding: 0 22px; border: 0; border-radius: 999px; background: #143f40; color: #fff; font: 700 13px inherit; cursor: pointer; box-shadow: 0 10px 24px rgba(20, 63, 64, .18); }
+.ds-store-unavailable button:hover { background: #1f6264; }
+@media (prefers-reduced-motion: no-preference) { .ds-store-unavailable-mark { animation: ds-unavailable-float 3.4s ease-in-out infinite; } }
+@keyframes ds-unavailable-float { 50% { transform: translateY(-7px) rotate(3deg); } }
 .ds-store-not-found {
   min-height: 100dvh;
   display: grid;

@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { loadStoreConfig } from "../config";
 import type { StorefrontConfig } from "../config";
 import { configurePreviewSession, isProtectedPreviewStore } from "../api/client";
+import { ApiError } from "../api/client";
 
 type LoaderIdentity = Pick<StorefrontConfig, "logoUrl" | "storeName" | "design">;
 
@@ -60,13 +61,31 @@ export function bootStorefront(root: HTMLElement, render: (config: StorefrontCon
     </div>,
   );
 
-  const unavailable = (message: string) =>
+  const unavailable = (cause: unknown) => {
+    const language = navigator.language.toLowerCase().startsWith("ar")
+      ? "ar"
+      : navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en";
+    const maintenance = cause instanceof ApiError && cause.code === "storefront_temporarily_unavailable";
+    const storeName = cause instanceof ApiError ? cause.fields.storeName?.[0] : "";
+    const copy = {
+      ar: { eyebrow: "سنعود قريبًا", title: "المتجر غير متاح حاليًا", body: "نقوم بتجهيز المتجر للعودة إليكم قريبًا. شكرًا لتفهمكم.", retry: "إعادة المحاولة", fallback: "تعذر فتح المتجر الآن. حاول مرة أخرى بعد قليل." },
+      fr: { eyebrow: "À très bientôt", title: "Boutique momentanément indisponible", body: "Nous préparons la boutique pour vous accueillir à nouveau très prochainement. Merci de votre compréhension.", retry: "Réessayer", fallback: "La boutique ne peut pas être ouverte pour le moment. Réessayez dans quelques instants." },
+      en: { eyebrow: "Coming soon", title: "Store temporarily unavailable", body: "We’re preparing the store to welcome you back very soon. Thank you for your patience.", retry: "Try again", fallback: "The store cannot be opened right now. Please try again shortly." },
+    }[language];
+    document.title = `${storeName || "Store"} — ${copy.title}`;
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     reactRoot.render(
-      <div className="ds-store-unavailable" role="alert">
-        <h1>Store unavailable</h1>
-        <p style={{ margin: 0 }}>{message}</p>
-      </div>,
+      <main className="ds-store-unavailable" role="alert">
+        <div className="ds-store-unavailable-mark" aria-hidden="true"><span /></div>
+        {storeName && <strong className="ds-store-unavailable-name">{storeName}</strong>}
+        <span className="ds-store-unavailable-eyebrow">{maintenance ? copy.eyebrow : "TijaraGO"}</span>
+        <h1>{maintenance ? copy.title : copy.fallback}</h1>
+        {maintenance && <p>{copy.body}</p>}
+        <button type="button" onClick={() => window.location.reload()}>{copy.retry}</button>
+      </main>,
     );
+  };
 
   const notFound = () => {
     const language = navigator.language.toLowerCase().startsWith("ar")
@@ -105,9 +124,7 @@ export function bootStorefront(root: HTMLElement, render: (config: StorefrontCon
       rememberLoaderIdentity(localizedConfig);
       reactRoot.render(<StrictMode>{render(localizedConfig)}</StrictMode>);
     })
-    .catch((e: unknown) =>
-      unavailable(e instanceof Error ? e.message : String(e)),
-    );
+    .catch(unavailable);
 
   loading(cachedLoaderIdentity());
   if (window.self !== window.top) {

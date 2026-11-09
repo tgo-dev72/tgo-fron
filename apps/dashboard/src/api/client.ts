@@ -144,6 +144,7 @@ export interface SubscriptionPaymentStatus {
   created_at: string;
 }
 export interface SubscriptionStatus {
+  access: { allowed: boolean; code: "subscription_required" | null };
   subscription: null | {
     status: "inactive" | "active" | "canceled" | "expired";
     plan: SubscriptionPlan | null;
