@@ -1,0 +1,7 @@
+.slide-settings { border:0; margin:0; padding:0; min-width:0; display:grid; gap:16px; }
+.slide-settings-card { min-width:0; display:grid; gap:14px; padding:14px; border:1px solid var(--border); border-radius:12px; }
+.slide-settings-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; }
+.slide-settings-head > div { display:flex; }
+.slide-settings .field { min-width:0; }
+.slide-settings .input,.slide-settings .select { width:100%; min-width:0; }
+.theme-editor-shell fieldset:disabled { opacity:.7; }

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Secure Checkout</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    background: linear-gradient(135deg, #0e1116, #151a22);
+    color: #e6e9ef;
+  }
+  .card {
+    width: 400px; max-width: 92vw; background: #151a22;
+    border: 1px solid #232a35; border-radius: 16px; padding: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .lock { font-size: 40px; text-align: center; margin-bottom: 12px; }
+  h1 { font-size: 20px; text-align: center; margin: 0 0 4px; }
+  .sub { text-align: center; color: #8b95a3; font-size: 13px; margin-bottom: 24px; }
+  .row { display: flex; gap: 12px; margin-bottom: 14px; }
+  input {
+    width: 100%; padding: 13px 14px; background: #0a0d12;
+    border: 1px solid #232a35; border-radius: 10px; color: #e6e9ef; font-size: 15px;
+  }
+  input:focus { outline: none; border-color: #0e92e4; }
+  .brand {
+    display: flex; justify-content: space-between; color: #8b95a3;
+    font-size: 12px; margin-bottom: 18px; letter-spacing: .04em;
+  }
+  button {
+    width: 100%; padding: 14px; border: 0; border-radius: 10px;
+    background: #0e92e4; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  button:disabled { opacity: .55; cursor: wait; }
+  .note { text-align: center; color: #5c6573; font-size: 12px; margin-top: 14px; }
+  .spin {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff; border-radius: 50%; display: inline-block; vertical-align: -3px;
+    animation: rot .8s linear infinite; margin-right: 8px;
+  }
+  @keyframes rot { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="lock">🔒</div>
+    <h1>Secure payment</h1>
+    <p class="sub" id="sub">Pay securely with your card</p>
+    <div class="brand"><span>YCPay</span><span id="amount"></span></div>
+    <input placeholder="Card number" inputmode="numeric" maxlength="19" value="4242 4242 4242 4242" />
+    <div class="row">
+      <input placeholder="MM / YY" value="12 / 28" />
+      <input placeholder="CVC" inputmode="numeric" maxlength="4" value="123" />
+    </div>
+    <button id="pay">Pay now</button>
+    <p class="note">Demo gateway — any card is accepted. No real charge.</p>
+  </div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get("order_id");
+  const successUrl = params.get("success_url") || "http://localhost:5173";
+  const lang = params.get("lang") || "en";
+
+  document.getElementById("sub").textContent =
+    lang === "ar" ? "ادفع بأمان باستخدام بطاقتك" : lang === "fr" ? "Payez en toute sécurité avec votre carte" : "Pay securely with your card";
+  document.getElementById("pay").textContent =
+    lang === "ar" ? "ادفع الآن" : lang === "fr" ? "Payer maintenant" : "Pay now";
+
+  document.getElementById("pay").addEventListener("click", async () => {
+    const btn = document.getElementById("pay");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span>Processing…';
+    try {
+      await fetch(`http://localhost:${location.port}/api/payments/verify/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: orderId }),
+      });
+      setTimeout(() => { location.href = successUrl; }, 600);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = "Try again";
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+:root {
+  --motion-fast: 160ms;
+  --motion-normal: 320ms;
+  --motion-reveal: 720ms;
+  --motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-distance: 42px;
+  --motion-distance-horizontal: 52px;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --motion-reveal: 560ms;
+    --motion-distance: 24px;
+    --motion-distance-horizontal: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

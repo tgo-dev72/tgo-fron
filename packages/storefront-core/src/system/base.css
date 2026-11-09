@@ -1,0 +1,602 @@
+/* ============================================================
+   Shared primitive styles for every system.
+   Each system supplies its tokens as CSS variables on .ds-root.
+   ============================================================ */
+
+body { margin: 0; }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Shared storefront boot state, visible while runtime configuration loads. */
+.ds-store-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 24px;
+  min-height: 100dvh;
+  padding: 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 43%, rgba(175, 154, 112, .09), transparent 28%),
+    #fbfaf7;
+  color: #181816;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.ds-store-loader-mark {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  animation: ds-store-loader-breathe 1.8s ease-in-out infinite;
+}
+.ds-store-loader-mark span,
+.ds-store-loader-mark i {
+  position: absolute;
+  inset: 8px;
+  display: block;
+  border: 1px solid #24231f;
+  transform: rotate(45deg);
+}
+.ds-store-loader-mark i {
+  inset: 17px;
+  border-color: #aa8c52;
+  animation: ds-store-loader-turn 2.6s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+.ds-store-loader-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  padding: 18px;
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 18px 54px rgba(24, 24, 22, .12);
+}
+.ds-store-loader-logo img {
+  display: block;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ds-store-loader-logo span {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid rgba(170, 140, 82, .42);
+  border-block-start-color: #aa8c52;
+  border-radius: 36px;
+  animation: ds-store-loader-logo-turn 2.4s linear infinite;
+}
+.ds-store-loader strong {
+  max-width: min(360px, 78vw);
+  overflow: hidden;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ds-store-loader-rule {
+  width: min(168px, 46vw);
+  height: 1px;
+  overflow: hidden;
+  background: rgba(24, 24, 22, .12);
+}
+.ds-store-loader-rule span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #aa8c52, transparent);
+  animation: ds-store-loader-progress 1.45s ease-in-out infinite;
+}
+.ds-store-loader p {
+  margin: -8px 0 0;
+  color: #69665f;
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-size: .72rem;
+  font-style: italic;
+  letter-spacing: .14em;
+}
+
+/* Immediate, non-blocking storefront structure shown only while runtime
+   configuration is genuinely pending. It mirrors the final page geometry and
+   deliberately contains no splash branding or mandatory image wait. */
+.ds-store-bootstrap {
+  min-height: 100dvh;
+  background: #fff;
+  color: #111827;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.ds-store-bootstrap-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 96px;
+  padding-inline: clamp(20px, 6vw, 96px);
+  border-bottom: 1px solid #e5e7eb;
+}
+.ds-store-bootstrap-header strong { font-size: clamp(1.15rem, 2vw, 1.65rem); letter-spacing: -.035em; }
+.ds-store-bootstrap-action,
+.ds-store-bootstrap-actions i,
+.ds-store-bootstrap-nav span,
+.ds-store-bootstrap-hero i,
+.ds-store-bootstrap-hero > span,
+.ds-store-bootstrap-products i { display: block; border-radius: 999px; background: #eef2f7; }
+.ds-store-bootstrap-action { width: 76px; height: 12px; }
+.ds-store-bootstrap-actions { display: flex; justify-content: end; gap: 14px; }
+.ds-store-bootstrap-actions i { width: 24px; height: 24px; border-radius: 50%; }
+.ds-store-bootstrap-nav {
+  display: flex;
+  justify-content: center;
+  gap: clamp(22px, 4vw, 54px);
+  min-height: 54px;
+  padding: 20px;
+  background: #101827;
+}
+.ds-store-bootstrap-nav span { width: 78px; height: 10px; background: #ffffff2b; }
+.ds-store-bootstrap-main { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+.ds-store-bootstrap-hero { display: grid; grid-template-columns: .9fr 1.1fr; gap: 32px; min-height: 390px; padding-block: 52px; }
+.ds-store-bootstrap-hero > div { display: grid; align-content: center; gap: 18px; }
+.ds-store-bootstrap-hero i:nth-child(1) { width: 22%; height: 10px; }
+.ds-store-bootstrap-hero i:nth-child(2) { width: 78%; height: 48px; border-radius: 8px; }
+.ds-store-bootstrap-hero i:nth-child(3) { width: 62%; height: 16px; }
+.ds-store-bootstrap-hero > span { min-height: 286px; border-radius: 18px; }
+.ds-store-bootstrap-products { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; padding-block: 36px 64px; }
+.ds-store-bootstrap-products i { aspect-ratio: 4 / 5; border-radius: 14px; }
+.ds-store-bootstrap-progress { position: fixed; z-index: 2; top: 149px; inset-inline: 0; height: 2px; overflow: hidden; opacity: 0; animation: ds-bootstrap-progress-visible 1ms linear 160ms forwards; }
+.ds-store-bootstrap-progress span { display: block; width: 36%; height: 100%; background: #2563eb; animation: ds-bootstrap-progress 900ms ease-in-out 160ms infinite; }
+@keyframes ds-bootstrap-progress-visible { to { opacity: 1; } }
+@keyframes ds-bootstrap-progress { from { transform: translateX(-120%); } to { transform: translateX(380%); } }
+@media (max-width: 680px) {
+  .ds-store-bootstrap-header { min-height: 72px; padding-inline: 18px; }
+  .ds-store-bootstrap-action { width: 40px; }
+  .ds-store-bootstrap-nav { min-height: 48px; gap: 18px; overflow: hidden; }
+  .ds-store-bootstrap-nav span { flex: 0 0 64px; }
+  .ds-store-bootstrap-main { width: min(100% - 32px, 560px); }
+  .ds-store-bootstrap-hero { grid-template-columns: 1fr; min-height: 0; padding-block: 32px; }
+  .ds-store-bootstrap-hero > span { min-height: 260px; }
+  .ds-store-bootstrap-products { grid-template-columns: 1fr 1fr; }
+  .ds-store-bootstrap-progress { top: 118px; }
+}
+.ds-store-unavailable {
+  min-height: 100dvh;
+  padding: 12vh 8vw;
+  background: #fbfaf7;
+  color: #181816;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  text-align: center;
+}
+.ds-store-unavailable h1 { margin: 0 0 8px; font-size: 1.5rem; }
+.ds-store-not-found {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  padding: 32px;
+  background: #fff;
+  color: #111827;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  text-align: center;
+}
+.ds-store-not-found-code {
+  margin-bottom: 18px;
+  color: #9ca3af;
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .22em;
+}
+.ds-store-not-found h1 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.25rem); letter-spacing: -.035em; }
+.ds-store-not-found p { margin: 10px 0 0; color: #6b7280; font-size: .95rem; }
+@keyframes ds-store-loader-breathe { 50% { opacity: .62; transform: scale(.94); } }
+@keyframes ds-store-loader-turn { 50% { transform: rotate(225deg); } 100% { transform: rotate(405deg); } }
+@keyframes ds-store-loader-progress { from { transform: translateX(-105%); } to { transform: translateX(345%); } }
+@keyframes ds-store-loader-logo-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ds-store-loader-mark,
+  .ds-store-loader-mark i,
+  .ds-store-loader-logo span,
+  .ds-store-loader-rule span { animation: none; }
+  .ds-store-loader-rule span { width: 100%; opacity: .55; }
+  .ds-store-bootstrap-progress { animation: none; opacity: 1; }
+  .ds-store-bootstrap-progress span { width: 100%; animation: none; }
+}
+
+.ds-root {
+  --ds-font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ds-font-display: var(--ds-font-body);
+  --ds-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ds-color-canvas: #ffffff;
+  --ds-color-surface: #f5f5f7;
+  --ds-color-surface-2: #ececef;
+  --ds-color-surface-3: #e3e3e7;
+  --ds-color-border: #e2e2e6;
+  --ds-color-border-strong: #b8b8c0;
+  --ds-color-ink: #1c1c1e;
+  --ds-color-ink-2: #56565d;
+  --ds-color-ink-3: #8e8e96;
+  --ds-color-accent: #0a63d6;
+  --ds-color-accent-hover: #0b74f5;
+  --ds-color-accent-ink: #ffffff;
+  --ds-color-accent-soft: #e2effc;
+  --ds-color-band: #141419;
+  --ds-color-band-ink: #ffffff;
+  --ds-color-band-ink-2: #b7b7c0;
+
+  --ds-r-sm: 6px;
+  --ds-r-md: 8px;
+  --ds-r-lg: 12px;
+  --ds-r-xl: 18px;
+  --ds-r-pill: 9999px;
+
+  --ds-s-1: 4px;
+  --ds-s-2: 8px;
+  --ds-s-3: 12px;
+  --ds-s-4: 16px;
+  --ds-s-5: 24px;
+  --ds-s-6: 32px;
+  --ds-s-7: 48px;
+  --ds-s-8: 64px;
+  --ds-section: 96px;
+
+  --ds-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ds-shadow-2: 0 20px 44px -18px rgba(0, 0, 0, 0.24);
+
+  font-family: var(--ds-font-body);
+  color: var(--ds-color-ink);
+  background: var(--ds-color-canvas);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga";
+}
+
+.ds-root a {
+  color: inherit;
+  text-decoration: none;
+}
+.ds-root button {
+  font-family: inherit;
+}
+
+/* ---- Layout ---- */
+.ds-container {
+  width: 100%;
+  max-width: var(--sf-content-width, 1140px);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 32px);
+}
+.ds-section {
+  padding-block: var(--ds-section);
+}
+.ds-container--wide {
+  max-width: 1280px;
+}
+
+/* ---- Type scale (consumes --ds-* tokens) ---- */
+.ds-display-1 {
+  font-family: var(--ds-font-display);
+  font-size: clamp(2.6rem, 6.5vw, 4.4rem);
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.ds-display-2 {
+  font-family: var(--ds-font-display);
+  font-size: clamp(2rem, 4.5vw, 3.1rem);
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.ds-display-3 {
+  font-family: var(--ds-font-display);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.ds-title {
+  font-size: 1.2rem;
+  line-height: 1.32;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.ds-lead {
+  font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+  line-height: 1.58;
+  color: var(--ds-color-ink-2);
+  max-width: 62ch;
+}
+.ds-body {
+  font-size: 1rem;
+  line-height: 1.62;
+  color: var(--ds-color-ink-2);
+}
+.ds-caption {
+  font-size: 0.875rem;
+  color: var(--ds-color-ink-3);
+}
+.ds-eyebrow {
+  font-family: var(--ds-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ds-color-ink-3);
+  margin: 0;
+}
+.ds-mono {
+  font-family: var(--ds-font-mono);
+}
+
+/* ---- Buttons ---- */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 550;
+  line-height: 1;
+  padding: 0.78rem 1.4rem;
+  border-radius: var(--sf-button-radius, var(--ds-r-md));
+  transition:
+    transform 0.12s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
+}
+.ds-btn:active {
+  transform: scale(0.97);
+}
+.ds-btn-primary {
+  background: var(--ds-color-accent);
+  color: var(--ds-color-accent-ink);
+  box-shadow: var(--ds-shadow-1);
+}
+.ds-root a.ds-btn-primary { color: var(--ds-color-accent-ink); }
+.ds-btn-primary:hover {
+  background: var(--ds-color-accent-hover);
+}
+.ds-btn-secondary {
+  background: var(--ds-color-surface);
+  color: var(--ds-color-ink);
+  box-shadow: inset 0 0 0 1px var(--ds-color-border);
+}
+.ds-btn-secondary:hover {
+  box-shadow: inset 0 0 0 1px var(--ds-color-border-strong);
+}
+.ds-btn-ghost {
+  background: transparent;
+  color: var(--ds-color-ink);
+}
+.ds-btn-ghost:hover {
+  background: var(--ds-color-accent-soft);
+}
+.ds-btn-on-band {
+  background: var(--ds-color-band-ink);
+  color: var(--ds-color-band);
+}
+.ds-btn-on-band:hover {
+  opacity: 0.92;
+}
+
+/* ---- Badges / pills ---- */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--ds-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.38rem 0.78rem;
+  border-radius: var(--ds-r-pill);
+  background: var(--ds-color-accent-soft);
+  color: var(--ds-color-accent);
+}
+
+/* ---- Cards ---- */
+.ds-card {
+  background: var(--ds-color-surface);
+  border-radius: var(--sf-card-radius, var(--ds-r-lg));
+  padding: 1.75rem;
+  box-shadow: var(--ds-shadow-1);
+}
+.ds-card-hairline {
+  box-shadow: inset 0 0 0 1px var(--ds-color-border);
+}
+
+/* ---- Grids ---- */
+.ds-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+.ds-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.ds-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.ds-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 900px) {
+  .ds-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ds-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 620px) {
+  .ds-grid-2,
+  .ds-grid-3,
+  .ds-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Nav ---- */
+.ds-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--ds-color-canvas);
+  border-bottom: 1px solid var(--ds-color-border);
+}
+.ds-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  gap: 16px;
+}
+.ds-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ds-nav-link {
+  padding: 8px 13px;
+  border-radius: var(--ds-r-sm);
+  font-size: 0.9rem;
+  color: var(--ds-color-ink-2);
+  transition:
+    color 0.12s ease,
+    background-color 0.12s ease;
+}
+.ds-nav-link:hover {
+  color: var(--ds-color-ink);
+  background: var(--ds-color-accent-soft);
+}
+.ds-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ds-wordmark {
+  font-family: var(--ds-font-display);
+  font-weight: 650;
+  font-size: 1.18rem;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ds-color-ink);
+}
+.ds-wordmark-mark {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--ds-color-accent);
+  flex: none;
+}
+@media (max-width: 800px) {
+  .ds-nav-links {
+    display: none;
+  }
+}
+
+/* ---- Bands (polarity-flipped / dark sections) ---- */
+.ds-band {
+  background: var(--ds-color-band);
+  color: var(--ds-color-band-ink);
+}
+.ds-band .ds-display-1,
+.ds-band .ds-display-2,
+.ds-band .ds-display-3,
+.ds-band .ds-title {
+  color: var(--ds-color-band-ink);
+}
+.ds-band .ds-lead,
+.ds-band .ds-body,
+.ds-band .ds-caption {
+  color: var(--ds-color-band-ink-2);
+}
+.ds-band .ds-eyebrow {
+  color: var(--ds-color-band-ink-2);
+}
+
+/* ---- Footer ---- */
+.ds-footer {
+  background: var(--ds-color-band);
+  color: var(--ds-color-band-ink-2);
+  padding: 64px 0 48px;
+}
+.ds-footer a {
+  color: inherit;
+  transition: color 0.12s ease;
+}
+.ds-footer a:hover {
+  color: var(--ds-color-band-ink);
+}
+.ds-footer-head {
+  font-family: var(--ds-font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ds-color-band-ink);
+  margin-bottom: 14px;
+}
+.ds-footer-link {
+  display: block;
+  padding: 6px 0;
+  font-size: 0.92rem;
+}
+.ds-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 32px;
+}
+.sf-powered-by a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sf-powered-by a:hover { opacity: 1; }
+.ds-footer-bottom {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ds-color-band-ink-2);
+  font-size: 0.8rem;
+  opacity: 0.75;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 800px) {
+  .ds-footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Misc ---- */
+.ds-center {
+  text-align: center;
+}
+.ds-arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.ds-btn:hover .ds-arrow {
+  transform: translateX(3px);
+}

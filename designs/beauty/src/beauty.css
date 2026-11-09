@@ -1,0 +1,33 @@
+/* Beauty: calm editorial care, education, and routine discovery. */
+.ds-root { background: #fffdf9; }
+.sf-announce { background: #493b36; color: #fffaf5; letter-spacing: .08em; }
+.sf-nav { border-bottom: 1px solid #e9ded4; }
+.theme-hero-beauty { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); background: #f3eae2; min-height: 660px; }
+.theme-hero-beauty .theme-hero-copy { padding-inline: clamp(36px, 7vw, 110px); }
+.theme-hero-beauty h1 { font-size: clamp(3.4rem, 6.8vw, 7.2rem); font-weight: 400; }
+.theme-hero-beauty .theme-hero-cta { border-radius: 999px; background: #493b36; padding-inline: 26px; }
+.theme-hero-beauty .theme-hero-media { margin: 24px 24px 24px 0; border-radius: 45% 45% 0 0; }
+.theme-hero-beauty .theme-hero-media img { object-fit: cover; }
+.theme-hero-beauty .theme-hero-caption { border-radius: 0; }
+.sf-card-media { background: #f4eee8; border-radius: 2px; aspect-ratio: 4 / 5; }
+.sf-card-media img { object-fit: contain; }
+.sf-card:hover .sf-card-media { box-shadow: none; }
+.sf-card-name { font-family: Georgia, serif; font-size: 1.18rem; font-weight: 500; }
+.sf-card-add { border-color: #493b36; border-radius: 0; }
+.sf-products .ds-display-3, .sf-related-products .ds-display-3 { font-family: Georgia, serif; font-weight: 400; }
+.sf-tab.is-active { background: var(--ds-color-accent); color: var(--ds-color-accent-ink); border-color: var(--ds-color-accent); }
+.sf-gallery-main { border-radius: 22px; background: #f4eee8; }
+.theme-extra-beauty { background: #f8f4ef; }
+.theme-extra-beauty .theme-attribute-block { border: 0; border-top: 1px solid var(--ds-color-border-strong); background: transparent; padding: 28px 0; min-height: 0; }
+.theme-extra-beauty .theme-product-image { border-radius: 160px 160px 10px 10px; }
+.theme-product-extra-beauty dl div { grid-template-columns: 130px 1fr; }
+.sf-newsletter { background: #ece1d7; }
+.sf-product-page .theme-product-extra-beauty dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; max-width: none; }
+.sf-product-page .theme-product-extra-beauty dl div { display: block; }
+.sf-product-page .theme-product-extra-beauty dt { margin-bottom: .5rem; color: var(--ds-color-accent); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
+.sf-product-page .theme-product-extra-beauty dd { font: 400 clamp(1.1rem, 2vw, 1.45rem)/1.4 var(--ds-font-display); }
+@media (max-width: 760px) {
+  .theme-hero-beauty { min-height: 0; grid-template-columns: 1fr; }
+  .theme-hero-beauty .theme-hero-media { margin: 0 16px 16px; min-height: 370px; }
+  .sf-product-page .theme-product-extra-beauty dl { grid-template-columns: 1fr; }
+}

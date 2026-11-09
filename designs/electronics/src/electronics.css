@@ -1,0 +1,35 @@
+/* Electronics: structured discovery, compact cards, and specifications. */
+.ds-root { background: #f5f7fa; }
+.sf-announce { background: #0b1730; color: white; letter-spacing: .04em; }
+.sf-nav { border-bottom: 1px solid #dce3ed; background: white; }
+.theme-hero-electronics { grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); background: #102b55; min-height: 560px; color: white; }
+.theme-hero-electronics .theme-hero-copy { padding-inline: clamp(30px, 5vw, 90px); }
+.theme-hero-electronics h1 { font-family: Arial, sans-serif; font-size: clamp(2.8rem, 5vw, 5.5rem); font-weight: 850; letter-spacing: -.07em; max-width: 12ch; }
+.theme-hero-electronics .theme-hero-cta { background: #e3edff; color: #102b55; border-radius: 8px; }
+.theme-hero-electronics .theme-hero-cta:hover { background: #ffffff; color: #102b55; }
+.theme-hero-electronics .theme-hero-media { margin: 16px 16px 16px 0; border-radius: 12px; background: #182d4e; }
+.theme-hero-electronics .theme-hero-media img { object-fit: cover; }
+.theme-hero-electronics .theme-hero-caption { color: #102b55; border-radius: 4px; }
+.sf-products { background: #f5f7fa; }
+.sf-grid { gap: 14px; }
+.sf-card { background: white; border: 1px solid #dce3ed; border-radius: 10px; padding: 10px; }
+.sf-card-media { aspect-ratio: 1 / 1; background: #f3f5f7; border-radius: 6px; }
+.sf-card-media img { object-fit: contain; }
+.sf-card-body { padding-inline: 4px; }
+.sf-card-name { font-weight: 750; }
+.sf-card-add { border-color: var(--ds-color-accent); color: var(--ds-color-accent); }
+.sf-tab.is-active { background: var(--ds-color-accent); color: var(--ds-color-accent-ink); border-color: var(--ds-color-accent); }
+.sf-gallery-main { background: white; border-radius: 10px; }
+.theme-extra-electronics { background: #e9eef5; }
+.theme-extra-electronics .theme-section-head h2 { font-family: Arial, sans-serif; font-weight: 800; }
+.theme-compare { border: 1px solid #dce3ed; }
+.sf-newsletter { background: #0b1730; color: white; }
+.sf-product-page .theme-product-extra-electronics dl { max-width: none; }
+.sf-product-page .theme-product-extra-electronics dl div { grid-template-columns: minmax(170px, 26%) 1fr; }
+.sf-product-page .theme-product-extra-electronics dt { text-transform: capitalize; }
+@media (max-width: 760px) {
+  .theme-hero-electronics { min-height: 0; grid-template-columns: 1fr; }
+  .theme-hero-electronics .theme-hero-media { margin: 0 16px 16px; min-height: 290px; }
+  .sf-card { padding: 8px; }
+  .sf-product-page .theme-product-extra-electronics dl div { grid-template-columns: minmax(105px, 35%) 1fr; }
+}

@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build:storefront",
+  "outputDirectory": "apps/storefront/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}

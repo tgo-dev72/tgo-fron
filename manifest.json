@@ -1,0 +1,308 @@
+{
+  "version": 2,
+  "designs": [
+    {
+      "key": "basic",
+      "name": "Essential",
+      "tagline": "Everything a new store needs",
+      "description": "A clean, fast storefront with the essential paths from product discovery to checkout.",
+      "family": "essential_commerce",
+      "business_need": "Launch a professional store with little setup.",
+      "best_for": [
+        "New stores",
+        "Mixed catalogs"
+      ],
+      "journey": [
+        "Discover products",
+        "Choose options",
+        "Checkout"
+      ],
+      "business_outcomes": [
+        "Make the buying path obvious",
+        "Keep setup and maintenance simple"
+      ],
+      "status": "ready",
+      "screenshots": [],
+      "demo_url": null,
+      "dev_port": 5173,
+      "tier": "standard",
+      "features": [],
+      "feature_maturity": {},
+      "config_schema": [
+        {
+          "key": "store_name",
+          "label": "Store name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "contact_email",
+          "label": "Contact email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "brand_color",
+          "label": "Brand color",
+          "type": "color",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "beauty",
+      "name": "Beauty",
+      "tagline": "Care with clarity",
+      "description": "A calm, ingredient-aware storefront for beauty and personal care. Customers can browse concerns, inspect product details and explore a routine.",
+      "family": "beauty_education",
+      "business_need": "Explain what a product does and how it fits a care routine.",
+      "best_for": [
+        "Skincare",
+        "Cosmetics",
+        "Wellness"
+      ],
+      "journey": [
+        "Shop by concern",
+        "Review ingredients",
+        "Build a routine",
+        "Checkout"
+      ],
+      "business_outcomes": [
+        "Help customers understand products",
+        "Make routine discovery easy"
+      ],
+      "status": "ready",
+      "screenshots": [],
+      "demo_url": null,
+      "dev_port": 5174,
+      "tier": "premium",
+      "features": [
+        "facetedSearch",
+        "quickView"
+      ],
+      "feature_maturity": {
+        "facetedSearch": "production",
+        "quickView": "production"
+      },
+      "config_schema": [
+        {
+          "key": "store_name",
+          "label": "Store name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "contact_email",
+          "label": "Contact email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "brand_color",
+          "label": "Brand color",
+          "type": "color",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "fashion",
+      "name": "Fashion",
+      "tagline": "A collection with a point of view",
+      "description": "An image-led storefront for apparel and accessories, with editorial discovery and clear variant selection.",
+      "family": "fashion_editorial",
+      "business_need": "Present collections and variants with the visual confidence of a fashion brand.",
+      "best_for": [
+        "Clothing",
+        "Footwear",
+        "Accessories"
+      ],
+      "journey": [
+        "Explore the campaign",
+        "Browse the edit",
+        "Select size and color",
+        "Checkout"
+      ],
+      "business_outcomes": [
+        "Give collections a recognizable identity",
+        "Make apparel options easy to choose"
+      ],
+      "status": "ready",
+      "screenshots": [],
+      "demo_url": null,
+      "dev_port": 5175,
+      "tier": "premium",
+      "features": [
+        "facetedSearch",
+        "quickView"
+      ],
+      "feature_maturity": {
+        "facetedSearch": "production",
+        "quickView": "production"
+      },
+      "config_schema": [
+        {
+          "key": "store_name",
+          "label": "Store name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "contact_email",
+          "label": "Contact email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "brand_color",
+          "label": "Brand color",
+          "type": "color",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "electronics",
+      "name": "Electronics",
+      "tagline": "Compare what matters",
+      "description": "A structured storefront for technical products, with attribute-driven comparison, dense product cards and clear specifications.",
+      "family": "electronics_specification",
+      "business_need": "Help shoppers compare technical options and find the right product.",
+      "best_for": [
+        "Consumer electronics",
+        "Computers",
+        "Accessories"
+      ],
+      "journey": [
+        "Browse categories",
+        "Filter by attributes",
+        "Compare specifications",
+        "Checkout"
+      ],
+      "business_outcomes": [
+        "Reduce choice overload",
+        "Make specs and stock easier to assess"
+      ],
+      "status": "ready",
+      "screenshots": [],
+      "demo_url": null,
+      "dev_port": 5176,
+      "tier": "premium",
+      "features": [
+        "facetedSearch",
+        "compare"
+      ],
+      "feature_maturity": {
+        "facetedSearch": "production",
+        "compare": "production"
+      },
+      "config_schema": [
+        {
+          "key": "store_name",
+          "label": "Store name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "contact_email",
+          "label": "Contact email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "brand_color",
+          "label": "Brand color",
+          "type": "color",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "nexa",
+      "name": "NEXA",
+      "tagline": "Modern products, impeccably presented",
+      "description": "A black-and-light-gold premium storefront for technology, accessories and modern product catalogs, balancing editorial storytelling with precise commerce.",
+      "family": "modern_luxury",
+      "business_need": "Present modern products with premium restraint, strong discovery and clear purchasing paths.",
+      "best_for": [
+        "Technology",
+        "Premium accessories",
+        "Modern lifestyle products",
+        "Curated multi-category stores"
+      ],
+      "journey": [
+        "Discover the campaign",
+        "Browse curated categories",
+        "Compare product details",
+        "Checkout"
+      ],
+      "business_outcomes": [
+        "Give technical and lifestyle products one luxury identity",
+        "Move customers from discovery to confident purchase"
+      ],
+      "status": "ready",
+      "screenshots": [],
+      "demo_url": null,
+      "dev_port": 5186,
+      "tier": "premium",
+      "features": [
+        "facetedSearch",
+        "quickView"
+      ],
+      "feature_maturity": {
+        "facetedSearch": "production",
+        "quickView": "production"
+      },
+      "config_schema": [
+        {
+          "key": "store_name",
+          "label": "Store name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "contact_email",
+          "label": "Contact email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "brand_color",
+          "label": "Brand color",
+          "type": "color",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "premium",
+  "features": [
+    "facetedSearch",
+    "quickView"
+  ],
+  "feature_maturity": {
+    "facetedSearch": "production",
+    "quickView": "production"
+  }
+}

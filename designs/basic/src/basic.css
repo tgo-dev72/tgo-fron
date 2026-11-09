@@ -1,0 +1,156 @@
+/* Basic family: low setup cost, high legibility and an obvious buying path. */
+
+.sf-hero {
+  background: var(--ds-color-canvas);
+}
+.sf-hero .ds-eyebrow {
+  color: var(--ds-color-accent);
+}
+.sf-hero-inner {
+  min-height: min(560px, 66vh);
+  align-items: center;
+}
+.sf-hero-title {
+  max-width: 16ch;
+  letter-spacing: -0.035em;
+}
+
+.sf-tab.is-active {
+  background: var(--ds-color-accent);
+  border-color: var(--ds-color-accent);
+  color: var(--ds-color-accent-ink);
+}
+.sf-tabs {
+  background: color-mix(in srgb, var(--ds-color-canvas) 82%, transparent);
+}
+
+.sf-card-media {
+  border-radius: var(--ds-r-md);
+  box-shadow: none;
+  background: color-mix(in srgb, var(--ds-color-surface-2) 76%, var(--ds-color-canvas));
+}
+.sf-card:hover .sf-card-media {
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ds-color-ink) 8%, transparent);
+}
+.sf-card-name {
+  letter-spacing: -0.01em;
+}
+.sf-root[data-design="basic"] .sf-card-body {
+  flex: 1;
+}
+.sf-root[data-design="basic"] .sf-card-commerce {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+.sf-root[data-design="basic"] .sf-card-commerce .sf-price {
+  justify-self: start;
+}
+.sf-root[data-design="basic"] .sf-card-commerce .sf-card-add {
+  width: 100%;
+  min-height: 44px;
+  justify-self: stretch;
+}
+.sf-save-badge {
+  background: var(--ds-color-accent);
+}
+.sf-gallery-main,
+.sf-pdp-modal {
+  box-shadow: inset 0 0 0 1px var(--ds-color-border);
+}
+.sf-newsletter {
+  margin-top: 0;
+}
+.sf-root[data-design="basic"] .sf-newsletter-form {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--sf-bg-newsletter-ink, var(--ds-color-canvas)) 24%, transparent);
+  background: var(--sf-bg-newsletter-ink, var(--ds-color-canvas));
+}
+.sf-root[data-design="basic"] .sf-newsletter-form input {
+  width: 100%;
+  padding-inline: 6px;
+}
+.sf-root[data-design="basic"] .sf-newsletter-form .ds-btn {
+  position: static;
+  min-width: 116px;
+  align-self: stretch;
+  border-radius: calc(var(--ds-r-pill) - 5px);
+  background: var(--ds-color-accent);
+  color: var(--ds-color-accent-ink);
+}
+.sf-root[data-design="basic"] .sf-newsletter-form .ds-btn:hover:not(:disabled) {
+  background: var(--ds-color-accent-hover);
+}
+
+@media (max-width: 520px) {
+  .sf-root[data-design="basic"] .sf-newsletter-form {
+    grid-template-columns: auto minmax(0, 1fr);
+    border-radius: var(--ds-r-lg);
+  }
+  .sf-root[data-design="basic"] .sf-newsletter-form input { width: 100%; }
+  .sf-root[data-design="basic"] .sf-newsletter-form .ds-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 46px;
+    border-radius: calc(var(--ds-r-lg) - 5px);
+  }
+}
+
+/* Spec band */
+.basic-spec {
+  border-block: 1px solid var(--ds-color-border);
+  background: var(--ds-color-surface);
+}
+.basic-spec-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 32px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.basic-spec-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 26px 20px;
+  border-inline-start: 1px solid var(--ds-color-border);
+}
+.basic-spec-cell:first-child {
+  border-inline-start: 0;
+}
+.basic-spec-key {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-color-ink-3);
+}
+.basic-spec-value {
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+@media (max-width: 620px) {
+  .basic-spec-inner {
+    grid-template-columns: 1fr;
+  }
+  .basic-spec-cell {
+    border-inline-start: 0;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+}
+
+.sf-card-add {
+  border-color: var(--ds-color-ink);
+  border-radius: var(--ds-r-md);
+  background: var(--ds-color-ink);
+  color: var(--ds-color-canvas);
+}
+.sf-card-add:hover:not(:disabled) {
+  border-color: var(--ds-color-accent);
+  background: var(--ds-color-accent);
+  color: var(--ds-color-accent-ink);
+}

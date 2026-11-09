@@ -1,0 +1,116 @@
+/* Language switcher */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: var(--shadow-xs);
+}
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  min-width: 36px;
+  height: 32px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  line-height: 1;
+}
+.lang-switch button:hover {
+  color: var(--ink);
+}
+.lang-switch button.active {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 2px 7px color-mix(in srgb, var(--brand) 28%, transparent);
+}
+
+.lang-switch-compact {
+  position: static;
+  flex: 0 0 auto;
+}
+
+[dir="rtl"] .toggle input:checked + .toggle-track::after {
+  transform: translateX(-16px);
+}
+
+/* Arabic glyphs need more vertical room than the Latin UI fonts. */
+html[lang="ar"] body {
+  font-family: "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  line-height: 1.75;
+}
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] .d-title,
+html[lang="ar"] .d-title-xl,
+html[lang="ar"] .login-story-copy h1,
+html[lang="ar"] .login-card h2 {
+  font-family: "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+html[lang="ar"] p,
+html[lang="ar"] li,
+html[lang="ar"] td,
+html[lang="ar"] th,
+html[lang="ar"] label,
+html[lang="ar"] small,
+html[lang="ar"] .login-success,
+html[lang="ar"] .login-error {
+  line-height: 1.75;
+}
+html[lang="ar"] button,
+html[lang="ar"] .btn,
+html[lang="ar"] input,
+html[lang="ar"] textarea,
+html[lang="ar"] select {
+  font-family: "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  line-height: 1.55;
+}
+html[lang="ar"] .input,
+html[lang="ar"] .textarea,
+html[lang="ar"] .select {
+  padding-block: 9px;
+}
+/* Fixed 38px Latin controls clip Arabic glyph ascenders and descenders once
+   the Arabic line-height and vertical padding are applied. Give single-line
+   controls enough physical height and reserve the native select indicator. */
+html[lang="ar"] input.input,
+html[lang="ar"] select.input,
+html[lang="ar"] .select {
+  min-height: 44px;
+  height: 44px;
+  padding-block: 0;
+}
+html[lang="ar"] select.input,
+html[lang="ar"] .select {
+  padding-inline-start: 12px;
+  padding-inline-end: 38px;
+  text-align: start;
+}
+html[lang="ar"] .lang-switch button { line-height: 1.5; }
+html[lang="ar"] .d-kicker,
+html[lang="ar"] .sidebar-section-label,
+html[lang="ar"] .field-label,
+html[lang="ar"] .owner-badge,
+html[lang="ar"] .subscription-featured,
+html[lang="ar"] th {
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[lang="ar"] .login-story-copy p,
+html[lang="ar"] .login-card,
+html[lang="ar"] .field,
+html[lang="ar"] .verification-copy {
+  text-align: start;
+}
+html[lang="ar"] .auth-switch,
+html[lang="ar"] .verification-card { text-align: center; }

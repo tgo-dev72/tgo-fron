@@ -1,0 +1,63 @@
+{
+  "name": "design-stock",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Indexed storefront design templates for the store-platform showroom.",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "designs/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:basic",
+    "dev:showroom": "npm run dev -w @firdaous/showroom",
+    "dev:dashboard": "npm run dev -w @firdaous/dashboard",
+    "dev:platform-admin": "npm run dev -w @firdaous/platform-admin",
+    "dev:storefront": "npm run dev:basic",
+    "mock:api": "node scripts/mock-api.mjs",
+    "gallery:capture": "node scripts/capture-design-gallery.mjs",
+    "gallery:capture:previews": "node scripts/capture-theme-previews.mjs",
+    "smoke:premium": "node scripts/capture-design-gallery.mjs --design=beauty,fashion,electronics,nexa --views=storefront,header,product,cart,checkout,mobile,mobile-header --temporary",
+    "build": "npm --prefix designs/basic run build --workspaces=false && npm --prefix designs/beauty run build --workspaces=false && npm --prefix designs/fashion run build --workspaces=false && npm --prefix designs/electronics run build --workspaces=false && npm --prefix designs/nexa run build --workspaces=false",
+    "build:nexa": "npm --prefix designs/nexa run build --workspaces=false",
+    "build:storefront": "npm run build",
+    "build:platform-admin": "npm --prefix apps/platform-admin run build --workspaces=false",
+    "build:apps": "npm --prefix apps/dashboard run build --workspaces=false && npm --prefix apps/showroom run build --workspaces=false && npm --prefix apps/platform-admin run build --workspaces=false",
+    "typecheck": "npm --prefix designs/basic run typecheck --workspaces=false && npm --prefix designs/beauty run typecheck --workspaces=false && npm --prefix designs/fashion run typecheck --workspaces=false && npm --prefix designs/electronics run typecheck --workspaces=false && npm --prefix designs/nexa run typecheck --workspaces=false",
+    "typecheck:nexa": "npm --prefix designs/nexa run typecheck --workspaces=false",
+    "typecheck:storefront": "npm run typecheck",
+    "typecheck:platform-admin": "npm --prefix apps/platform-admin run typecheck --workspaces=false",
+    "typecheck:apps": "npm --prefix apps/dashboard run typecheck --workspaces=false && npm --prefix apps/showroom run typecheck --workspaces=false && npm --prefix apps/platform-admin run typecheck --workspaces=false",
+    "test:dashboard": "node scripts/run-dashboard-tests.mjs",
+    "test:dashboard:e2e": "npm --prefix apps/dashboard run test:e2e --workspaces=false",
+    "test:showroom": "node scripts/run-showroom-tests.mjs",
+    "test:platform-admin": "node scripts/run-platform-admin-tests.mjs",
+    "test:auth-direction": "node scripts/test-auth-panel-direction.mjs",
+    "test:platform-admin:e2e": "npm --prefix apps/platform-admin run test:e2e --workspaces=false",
+    "test:storefront-core": "node scripts/run-storefront-core-tests.mjs",
+    "validate:manifest": "node scripts/validate-manifest.mjs",
+    "validate:design-quality": "node scripts/validate-design-quality.mjs",
+    "validate:seo": "node scripts/validate-seo-contract.mjs",
+    "security:audit": "node scripts/audit-production-security.mjs",
+    "security:audit:live": "node scripts/audit-production-security.mjs --live",
+    "quality": "npm run validate:manifest && npm run validate:design-quality && npm run validate:seo && npm run security:audit && npm run test:dashboard && npm run test:dashboard:e2e && npm run test:showroom && npm run test:platform-admin && npm run test:platform-admin:e2e && npm run test:storefront-core && npm run typecheck && npm run typecheck:apps",
+    "release:verify": "npm run quality && npm run build && npm run build:apps && npm run smoke:premium",
+    "dev:basic": "npm run dev -w @firdaous/basic",
+    "dev:beauty": "npm run dev -w @tijarago/beauty",
+    "dev:fashion": "npm run dev -w @tijarago/fashion",
+    "dev:electronics": "npm run dev -w @tijarago/electronics",
+    "dev:nexa": "npm run dev -w @tijarago/nexa"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.0",
+    "vercel": "^54.17.3",
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.63.0",
+    "react-router-dom": "^7.18.2"
+  }
+}

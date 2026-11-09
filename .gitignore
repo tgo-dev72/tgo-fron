@@ -1,0 +1,61 @@
+# Secrets and machine-specific environment. Keep documented contracts.
+.env*
+!.env.example
+
+# Dependencies, generated builds, and compiler caches at any workspace depth.
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.vite/
+**/.vite/
+*.tsbuildinfo
+.cache/
+.npm/
+coverage/
+**/coverage/
+
+# Browser-test and review output. Production gallery assets remain tracked.
+playwright-report/
+**/playwright-report/
+test-results/
+**/test-results/
+blob-report/
+**/blob-report/
+reviews/
+release-evidence/
+apps/showroom/public/gallery/current/*-header.png
+apps/showroom/public/gallery/current/*-mobile-header.png
+apps/showroom/public/gallery/current/*-navigation.png
+apps/showroom/public/gallery/current/*-width-*.png
+
+# Local provider state, TLS material, and deployment archives.
+.vercel/
+**/.vercel/
+ssl/
+**/ssl/
+key.pem
+cert.pem
+*.pem
+*.key
+*.tgz
+*.tar.gz
+
+# Editor, operating-system, log, and temporary files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+*.pid
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.orig
+*.rej
+.codex/
+.agents/

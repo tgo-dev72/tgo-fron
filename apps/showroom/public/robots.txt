@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /verify-email-pending
+Disallow: /create
+Disallow: /launch/
+Disallow: /membership
+Disallow: /subscription
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /design/*/preview
+
+Sitemap: https://www.tijarago.com/sitemap.xml
