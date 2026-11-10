@@ -78,6 +78,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return saved || null;
   });
 
+  useEffect(() => {
+    window.addEventListener(SUBSCRIPTION_STATUS_EVENT, reload);
+    return () => window.removeEventListener(SUBSCRIPTION_STATUS_EVENT, reload);
+  }, [reload]);
+
   const updateStore = useCallback((updated: Store) => {
     setStores(current => current?.map(entry => entry.id === updated.id ? updated : entry) ?? null);
   }, [setStores]);

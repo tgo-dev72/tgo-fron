@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { api } from "../api/client";
 import { useStore } from "../Layout";
 import { PageLoader } from "../components/Skeleton";
+import { SUBSCRIPTION_STATUS_EVENT } from "../../../shared/paymentReturn";
 
 interface AccessState {
   permissions: Set<string>;
@@ -33,6 +34,10 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   }, [store?.id, version]);
   const permissionSet = useMemo(() => new Set(permissions), [permissions]);
   const refresh = useCallback(() => setVersion((current) => current + 1), []);
+  useEffect(() => {
+    window.addEventListener(SUBSCRIPTION_STATUS_EVENT, refresh);
+    return () => window.removeEventListener(SUBSCRIPTION_STATUS_EVENT, refresh);
+  }, [refresh]);
   const accessLoading = loading || Boolean(store && loadedStoreId !== store.id);
   const value = useMemo(() => ({ permissions: permissionSet, fields, loading: accessLoading, refresh }), [accessLoading, fields, permissionSet, refresh]);
   return <AccessContext.Provider value={value}>{children}</AccessContext.Provider>;
