@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activePlanSubscriptions, formatPlanPrice, isMembershipResolved, isPlanCurrent, localizedPlanCopy, planBenefits, recommendedPlanId } from "./plans";
+import { activePlanSubscriptions, formatPlanPrice, hasUsedFreePlan, isMembershipResolved, isPlanCurrent, localizedPlanCopy, planBenefits, recommendedPlanId } from "./plans";
 import type { SubscriptionPlan, SubscriptionStatus } from "../api/platform";
 
 const accountPlan: SubscriptionPlan = {
@@ -79,4 +79,15 @@ test("authenticated plan actions stay blocked until membership is resolved", () 
   assert.equal(isMembershipResolved(true, false, true), false);
   assert.equal(isMembershipResolved(true, false, false), true);
   assert.equal(isMembershipResolved(false, false, false), true);
+});
+
+test("free-plan history is retained after the trial expires", () => {
+  const freePlan = { ...accountPlan, id: 1, slug: "free", price: "0.00", is_free: true };
+  const expired = {
+    subscriptions: [{ status: "expired", plan: freePlan, selected_store: null }],
+  } as SubscriptionStatus;
+  assert.equal(hasUsedFreePlan(expired), true);
+  assert.equal(hasUsedFreePlan({
+    subscriptions: [], subscription: null, latest_payment: null, payment: null, balances: [],
+  }), false);
 });

@@ -43,6 +43,14 @@ export function activePlanSubscriptions(status: SubscriptionStatus | null, plan:
   return subscriptions.filter((entry) => entry.status === "active" && entry.plan?.id === plan.id);
 }
 
+export function hasUsedFreePlan(status: SubscriptionStatus | null): boolean {
+  if (!status) return false;
+  const subscriptions = status.subscription
+    ? [...status.subscriptions, status.subscription]
+    : status.subscriptions;
+  return subscriptions.some((entry) => Boolean(entry.plan?.is_free));
+}
+
 export function isPlanCurrent(
   status: SubscriptionStatus | null,
   plan: SubscriptionPlan,

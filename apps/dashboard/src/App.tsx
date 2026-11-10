@@ -154,7 +154,7 @@ export default function App() {
                   <Route path="/design/customize" element={<Navigate to="/design/pages/home" replace />} />
                   <Route path="/design/pages/:pageKey" element={<ProtectedAdminRoute permission="storefront.customize"><ThemeEditorPage /></ProtectedAdminRoute>} />
                   <Route path="/settings" element={<ProtectedAdminRoute permission="settings.view"><SettingsPage /></ProtectedAdminRoute>} />
-                  <Route path="/subscription" element={<ProtectedAdminRoute permission="billing.view"><SubscriptionPage /></ProtectedAdminRoute>} />
+                  <Route path="/subscription" element={<SubscriptionPage />} />
                   <Route path="/team-access" element={<ProtectedAdminRoute permission="staff.view"><TeamAccessPage /></ProtectedAdminRoute>} />
                   <Route path="/stores/new" element={<ShowroomRedirect />} />
                   <Route path="*" element={<Navigate to="/" replace />} />

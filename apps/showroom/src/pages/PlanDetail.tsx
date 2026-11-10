@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   platform,
@@ -18,7 +18,7 @@ import { PageTransition, fadeUp } from "../components/PageTransition";
 import { useLocale } from "../i18n";
 import { friendlyApiError } from "../lib/errors";
 import { loadPlanCatalog, readPlanCatalogCache } from "../lib/planCatalog";
-import { formatPlanPrice, isMembershipResolved, isPlanCurrent, localizedPlanBenefit, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
+import { formatPlanPrice, hasUsedFreePlan, isMembershipResolved, isPlanCurrent, localizedPlanBenefit, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
 
 export default function PlanDetail() {
   const { slug = "" } = useParams();
@@ -111,6 +111,9 @@ export default function PlanDetail() {
   const copy = localizedPlanCopy(plan, locale);
   const recommended = plan.id === recommendedPlanId(catalog.plans);
   const membershipResolved = isMembershipResolved(Boolean(user), accountLoading, Boolean(accountError));
+  if (user && membershipResolved && plan.is_free && hasUsedFreePlan(status) && !current) {
+    return <Navigate to="/pricing" replace />;
+  }
   const canPurchase = Boolean(user && membershipResolved && !plan.is_free && !current && !isLowerPlan && catalog?.billing.available && (!needsStore || selectedStore));
 
   const performPurchase = async (useBalance: boolean, provider = selectedGateway) => {

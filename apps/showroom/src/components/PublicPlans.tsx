@@ -6,7 +6,7 @@ import { platform, type SubscriptionStatus } from "../api/platform";
 import { useAuth } from "../auth/AuthContext";
 import { useLocale } from "../i18n";
 import { loadPlanCatalog, readPlanCatalogCache } from "../lib/planCatalog";
-import { activePlanSubscriptions, formatPlanPrice, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
+import { activePlanSubscriptions, formatPlanPrice, hasUsedFreePlan, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
 
 export function PublicPlans() {
   const { t, locale } = useLocale();
@@ -15,6 +15,7 @@ export function PublicPlans() {
   const [loading, setLoading] = useState(() => !readPlanCatalogCache());
   const [failed, setFailed] = useState(false);
   const [status, setStatus] = useState<SubscriptionStatus | null>(null);
+  const [statusResolved, setStatusResolved] = useState(() => !user);
 
   const load = async () => {
     if (!catalog) setLoading(true);
@@ -49,16 +50,21 @@ export function PublicPlans() {
   useEffect(() => {
     if (!user) {
       setStatus(null);
+      setStatusResolved(true);
       return;
     }
+    setStatusResolved(false);
     let active = true;
     platform.subscriptionStatus()
       .then((next) => { if (active) setStatus(next); })
-      .catch(() => { if (active) setStatus(null); });
+      .catch(() => { if (active) setStatus(null); })
+      .finally(() => { if (active) setStatusResolved(true); });
     return () => { active = false; };
   }, [user]);
 
-  const plans = catalog?.plans ?? [];
+  const plans = (catalog?.plans ?? []).filter((plan) => (
+    !user || !plan.is_free || (statusResolved && status !== null && (!hasUsedFreePlan(status) || activePlanSubscriptions(status, plan).length > 0))
+  ));
   const recommendedId = recommendedPlanId(plans);
   return (
     <section id="plans" className="sr-section sr-public-plans" aria-labelledby="plans-title">

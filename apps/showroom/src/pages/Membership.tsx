@@ -16,7 +16,7 @@ import { PaymentProgressDialog, type PaymentProgressStage } from "../components/
 import { PageTransition, fadeUp } from "../components/PageTransition";
 import { useLocale } from "../i18n";
 import { friendlyApiError } from "../lib/errors";
-import { formatPlanPrice, isPlanCurrent, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
+import { formatPlanPrice, hasUsedFreePlan, isPlanCurrent, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
 import { announceSubscriptionStatusUpdate, paymentReturnSearch, readPaymentReturn } from "../../../shared/paymentReturn";
 
 const PENDING_DESIGN_KEY = "showroom-pending-design";
@@ -238,7 +238,7 @@ export default function Membership() {
           ))}
 
           <div className="sr-plan-grid">
-            {(catalog?.plans ?? []).map((plan, index) => {
+            {(catalog?.plans ?? []).filter((plan) => !plan.is_free || !hasUsedFreePlan(status) || isPlanCurrent(status, plan, selectedStore)).map((plan, index) => {
               const current = isPlanCurrent(status, plan, selectedStore);
               const currentScopePlan = status?.subscriptions.find((entry) => (
                 entry.status === "active"
