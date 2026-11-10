@@ -37,7 +37,7 @@ export function SubscriptionPage() {
   const paymentTerminalFailure = Boolean(trackedPayment && ["failed", "canceled"].includes(trackedPayment.status));
   const paymentPending = Boolean(paymentId && paymentResult !== "failed" && (!trackedPayment || trackedPayment.status === "pending"));
   const activeSubscriptions = (status?.subscriptions ?? []).filter((item) => item.status === "active");
-  const renewalWindowMs = 3 * 24 * 60 * 60 * 1000;
+  const renewalWindowMs = 7 * 24 * 60 * 60 * 1000;
   const canRenew = (plan: SubscriptionPlan) => activeSubscriptions.some((entry) => (
     entry.plan?.id === plan.id
     && (plan.entitlement_scope === "all_owned_stores" || entry.selected_store?.id === store?.id)
