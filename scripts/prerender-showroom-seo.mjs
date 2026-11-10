@@ -9,8 +9,8 @@ const image = `${origin}/icon-512.png?v=2`;
 
 const routes = {
   "/": {
-    title: "TijaraGO — أنشئ وأدر متجرك الإلكتروني في المغرب",
-    description: "أنشئ متجرًا إلكترونيًا متعدد اللغات في المغرب، وأدر المنتجات والطلبات والعملاء والتسويق وتصميم متجرك بسهولة مع TijaraGO.",
+    title: "TijaraGO — أنشئ وأدر متجرك الإلكتروني بسهولة",
+    description: "أنشئ متجرًا إلكترونيًا متعدد اللغات، وأدر المنتجات والطلبات والعملاء والتسويق وتصميم متجرك بسهولة مع TijaraGO.",
     lang: "ar",
     schema: [
       { "@context": "https://schema.org", "@type": "Organization", name: "TijaraGO", url: `${origin}/`, logo: image },
@@ -18,7 +18,7 @@ const routes = {
     ],
   },
   "/pricing": {
-    title: "TijaraGO pricing — Plans for online stores in Morocco",
+    title: "TijaraGO pricing — Plans for online stores",
     description: "Compare TijaraGO plans for creating and managing online stores, including store, catalog, team, analytics and marketing allowances.",
   },
   "/gallery": {
