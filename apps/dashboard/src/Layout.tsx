@@ -388,6 +388,7 @@ export function Layout() {
   const { store, stores, loading, error, reload } = useStore();
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const locale = useLocale();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => (
@@ -423,13 +424,14 @@ export function Layout() {
     if (path.startsWith("/subscription")) return "subscription";
     return "overview";
   })();
-  const worksWithoutStore = location.pathname.startsWith("/stores/new") || location.pathname.startsWith("/subscription");
+  const subscriptionRoute = location.pathname.startsWith("/subscription");
+  const worksWithoutStore = location.pathname.startsWith("/stores/new") || subscriptionRoute;
   const paymentRequired = billingStatus?.access.allowed === false;
-  const paywallCopy = {
-    en: { eyebrow: "Action required", title: "Choose a pack to reopen your store", body: "Your access period has ended. Dashboard features and your customer storefront are paused until payment is confirmed.", action: "View packs and pay" },
-    fr: { eyebrow: "Action requise", title: "Choisissez un forfait pour rouvrir votre boutique", body: "Votre période d’accès est terminée. Les fonctions du tableau de bord et la boutique client sont suspendues jusqu’à confirmation du paiement.", action: "Voir les forfaits et payer" },
-    ar: { eyebrow: "إجراء مطلوب", title: "اختر باقة لإعادة فتح متجرك", body: "انتهت فترة الوصول. تم إيقاف ميزات لوحة التحكم والمتجر الموجّه للعملاء إلى أن يتم تأكيد الدفع.", action: "عرض الباقات والدفع" },
-  }[locale];
+  useEffect(() => {
+    if (paymentRequired && !subscriptionRoute) {
+      navigate("/subscription", { replace: true });
+    }
+  }, [navigate, paymentRequired, subscriptionRoute]);
   const balances = billingStatus?.balances.length
     ? billingStatus.balances
     : [{
@@ -523,7 +525,11 @@ export function Layout() {
         </header>
         <main className="page">
           <div className="page-transition" key={location.pathname}>
-            {loading ? (
+            {subscriptionRoute ? (
+              <Outlet />
+            ) : paymentRequired || (error && canViewBilling && balanceLoading && !billingStatus) ? (
+              <div className="card"><PageLoader /></div>
+            ) : loading ? (
               <div className="card"><PageLoader /></div>
             ) : error ? (
               <div className="no-store-empty">
@@ -532,14 +538,6 @@ export function Layout() {
                   <button className="btn btn-secondary" onClick={reload}>{t(locale, "errors.tryAgain")}</button>
                 </div>
               </div>
-            ) : paymentRequired && !location.pathname.startsWith("/subscription") ? (
-              <section className="subscription-paywall" role="alert">
-                <span>{paywallCopy.eyebrow}</span>
-                <FiCreditCard aria-hidden="true" />
-                <h1>{paywallCopy.title}</h1>
-                <p>{paywallCopy.body}</p>
-                <NavLink className="btn btn-primary" to="/subscription">{paywallCopy.action}</NavLink>
-              </section>
             ) : stores.length === 0 && !worksWithoutStore ? (
               <NoStoreEmpty />
             ) : (
