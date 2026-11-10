@@ -37,6 +37,13 @@ export function SubscriptionPage() {
   const paymentTerminalFailure = Boolean(trackedPayment && ["failed", "canceled"].includes(trackedPayment.status));
   const paymentPending = Boolean(paymentId && paymentResult !== "failed" && (!trackedPayment || trackedPayment.status === "pending"));
   const activeSubscriptions = (status?.subscriptions ?? []).filter((item) => item.status === "active");
+  const renewalWindowMs = 3 * 24 * 60 * 60 * 1000;
+  const canRenew = (plan: SubscriptionPlan) => activeSubscriptions.some((entry) => (
+    entry.plan?.id === plan.id
+    && (plan.entitlement_scope === "all_owned_stores" || entry.selected_store?.id === store?.id)
+    && Boolean(entry.current_period_end)
+    && new Date(entry.current_period_end as string).getTime() - Date.now() <= renewalWindowMs
+  ));
 
   useLayoutEffect(() => {
     if (!paymentReturn.current.isReturn) return;
@@ -75,7 +82,7 @@ export function SubscriptionPage() {
   }, [paymentId]);
 
   async function performUpgrade(plan: SubscriptionPlan, useBalance: boolean, provider = selectedGateway) {
-    if (isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null)) return;
+    if (isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null) && !canRenew(plan)) return;
     if (plan.entitlement_scope === "one_store" && !store) { setError(t(locale, "subscription.selectStore")); return; }
     setUpgrading(plan.id); setError(""); setResumeCheckout(null);
     setPaymentProgress({ stage: "preparing", planName: localizedPlanCopy(plan, locale).name });
@@ -97,7 +104,7 @@ export function SubscriptionPage() {
   }
 
   function upgrade(plan: SubscriptionPlan) {
-    if (isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null)) return;
+    if (isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null) && !canRenew(plan)) return;
     if (plan.entitlement_scope === "one_store" && !store) { setError(t(locale, "subscription.selectStore")); return; }
     setGatewayPlan(plan);
   }
@@ -133,6 +140,7 @@ export function SubscriptionPage() {
       {(catalog?.plans ?? []).map((plan) => {
         const copy = localizedPlanCopy(plan, locale);
         const isCurrent = isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null);
+        const isRenewable = isCurrent && canRenew(plan);
         const currentScopePlan = activeSubscriptions.find((entry) => (
           entry.plan?.entitlement_scope === plan.entitlement_scope
           && (plan.entitlement_scope === "all_owned_stores" || entry.selected_store?.id === store?.id)
@@ -153,6 +161,7 @@ export function SubscriptionPage() {
               : plan.features.map((feature) => <li key={feature}><FiCheck /> {feature}</li>)}
           </ul>
           {plan.is_free ? <button className="btn btn-secondary" disabled>{activeSubscriptions.length ? t(locale, "subscription.freeAvailable") : t(locale, "subscription.currentPlan")}</button> :
+            isRenewable ? <button className="btn btn-primary" disabled={!catalog?.billing.available || upgrading !== null} onClick={() => upgrade(plan)}><FiCreditCard /> {upgrading === plan.id ? t(locale, "subscription.redirecting") : t(locale, "subscription.renewNow")}</button> :
             isCurrent ? <button className="btn btn-secondary" disabled><FiCheck /> {t(locale, "subscription.currentPlan")}</button> :
             isLowerPlan ? <button className="btn btn-secondary" disabled>{t(locale, "subscription.availableAtRenewal")}</button> :
             <button className="btn btn-primary" disabled={!catalog?.billing.available || upgrading !== null} onClick={() => upgrade(plan)}><FiCreditCard /> {upgrading === plan.id ? t(locale, "subscription.redirecting") : t(locale, "subscription.upgrade")}</button>}
