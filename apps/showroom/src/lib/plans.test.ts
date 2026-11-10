@@ -47,6 +47,7 @@ test("account plans are current without selecting a store", () => {
 
 test("active plans remain detectable when the API returns only the compatibility subscription field", () => {
   const status: SubscriptionStatus = {
+    access: { allowed: true, code: null },
     subscriptions: [],
     subscription: {
       status: "active",
@@ -88,6 +89,6 @@ test("free-plan history is retained after the trial expires", () => {
   } as SubscriptionStatus;
   assert.equal(hasUsedFreePlan(expired), true);
   assert.equal(hasUsedFreePlan({
-    subscriptions: [], subscription: null, latest_payment: null, payment: null, balances: [],
+    access: { allowed: true, code: null }, subscriptions: [], subscription: null, latest_payment: null, payment: null, balances: [],
   }), false);
 });

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ApiError, platform, type RetailType, type Design, type DeployRequest, type SubscriptionStatus } from "../api/platform";
 import { useLocale, retailLabel } from "../i18n";
@@ -520,7 +520,9 @@ export default function CreateStore() {
         setPollError(t("deploy.connection"));
       }
     } catch (err) {
-      if (err instanceof ApiError && err.code === "store_limit_reached") {
+      if (err instanceof ApiError && err.code === "subscription_required") {
+        navigate("/membership", { replace: true });
+      } else if (err instanceof ApiError && err.code === "store_limit_reached") {
         setError(t("wizard.err.storeLimit"));
         setStoreLimitReached(true);
       } else if (
@@ -572,6 +574,10 @@ export default function CreateStore() {
 
   if (!activeRequestId && (typesLoading || designsLoading || subscriptionLoading)) {
     return <ContentLoader label={t("wizard.loading")} />;
+  }
+
+  if (!activeRequestId && subscription?.access.allowed === false) {
+    return <Navigate to="/membership" replace />;
   }
 
   if (!activeRequestId && (designsError || subscriptionError)) {

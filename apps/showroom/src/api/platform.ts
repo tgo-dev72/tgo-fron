@@ -176,6 +176,7 @@ export interface SubscriptionCatalog {
 }
 
 export interface SubscriptionStatus {
+  access: { allowed: boolean; code: "subscription_required" | null };
   subscription: SubscriptionEntry | null;
   subscriptions: SubscriptionEntry[];
   latest_payment: SubscriptionPaymentStatus | null;
