@@ -1,5 +1,5 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   FiChevronDown,
   FiLayout,
@@ -388,7 +388,6 @@ export function Layout() {
   const { store, stores, loading, error, reload } = useStore();
   const { user } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const locale = useLocale();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => (
@@ -427,11 +426,6 @@ export function Layout() {
   const subscriptionRoute = location.pathname.startsWith("/subscription");
   const worksWithoutStore = location.pathname.startsWith("/stores/new") || subscriptionRoute;
   const paymentRequired = billingStatus?.access.allowed === false;
-  useEffect(() => {
-    if (paymentRequired && !subscriptionRoute) {
-      navigate("/subscription", { replace: true });
-    }
-  }, [navigate, paymentRequired, subscriptionRoute]);
   const balances = billingStatus?.balances.length
     ? billingStatus.balances
     : [{
@@ -527,8 +521,17 @@ export function Layout() {
           <div className="page-transition" key={location.pathname}>
             {subscriptionRoute ? (
               <Outlet />
-            ) : paymentRequired || (error && canViewBilling && balanceLoading && !billingStatus) ? (
+            ) : paymentRequired ? (
+              <Navigate to="/subscription" replace />
+            ) : canViewBilling && balanceLoading && !billingStatus ? (
               <div className="card"><PageLoader /></div>
+            ) : canViewBilling && balanceError && !billingStatus ? (
+              <div className="no-store-empty">
+                <div className="no-store-empty-inner">
+                  <p>{balanceError}</p>
+                  <button className="btn btn-secondary" onClick={reloadBalance}>{t(locale, "errors.tryAgain")}</button>
+                </div>
+              </div>
             ) : loading ? (
               <div className="card"><PageLoader /></div>
             ) : error ? (
