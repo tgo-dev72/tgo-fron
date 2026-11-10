@@ -37,6 +37,10 @@ export function SubscriptionPage() {
   const paymentTerminalFailure = Boolean(trackedPayment && ["failed", "canceled"].includes(trackedPayment.status));
   const paymentPending = Boolean(paymentId && paymentResult !== "failed" && (!trackedPayment || trackedPayment.status === "pending"));
   const activeSubscriptions = (status?.subscriptions ?? []).filter((item) => item.status === "active");
+  const subscriptionHistory = status?.subscription
+    ? [...(status.subscriptions ?? []), status.subscription]
+    : status?.subscriptions ?? [];
+  const hasUsedFreePlan = subscriptionHistory.some((item) => item.plan?.is_free);
   const renewalWindowMs = 7 * 24 * 60 * 60 * 1000;
   const canRenew = (plan: SubscriptionPlan) => activeSubscriptions.some((entry) => (
     entry.plan?.id === plan.id
@@ -137,7 +141,7 @@ export function SubscriptionPage() {
       <p>{Number(balance.reserved) > 0 ? t(locale, "subscription.balanceReserved", { amount: `${Math.floor(Number(balance.reserved))} ${balance.currency}` }) : t(locale, "subscription.balanceAtCheckout")}</p>
     </section>)}
     <section className="subscription-grid">
-      {(catalog?.plans ?? []).map((plan) => {
+      {(catalog?.plans ?? []).filter((plan) => !plan.is_free || !hasUsedFreePlan || isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null)).map((plan) => {
         const copy = localizedPlanCopy(plan, locale);
         const isCurrent = isPlanActiveForSelection(plan, activeSubscriptions, store?.id ?? null);
         const isRenewable = isCurrent && canRenew(plan);
