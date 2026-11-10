@@ -114,6 +114,10 @@ async function mockAuthenticatedPricing(page: Page) {
   let current = catalog();
   await page.route("**/backend/accounts/csrf", (route) => json(route, { csrfToken: "browser-test-csrf" }));
   await page.route("**/backend/api/platform-admin/session", (route) => json(route, { user }));
+  await page.route("**/backend/api/platform-admin/commerce-settings", (route) => json(route, {
+    free_trial_days: 30,
+    updated_at: "2026-09-01T00:00:00Z",
+  }));
   await page.route("**/backend/api/platform-admin/pricing", (route) => json(route, current));
   return {
     setCatalog(next: typeof current) { current = next; },

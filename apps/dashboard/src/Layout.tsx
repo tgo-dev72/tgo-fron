@@ -430,7 +430,7 @@ export function Layout() {
   })();
   const subscriptionRoute = location.pathname.startsWith("/subscription");
   const worksWithoutStore = location.pathname.startsWith("/stores/new") || subscriptionRoute;
-  const paymentRequired = billingStatus?.access.allowed === false;
+  const paymentRequired = billingStatus?.access?.allowed === false;
   const balances = billingStatus?.balances.length
     ? billingStatus.balances
     : [{
