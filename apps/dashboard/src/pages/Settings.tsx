@@ -34,9 +34,9 @@ const PAYMENT_COPY = {
 } as const;
 
 const INVOICE_COPY = {
-  en: { title: "Invoicing", intro: "Configure the legal identity and tax basis captured when an invoice is issued.", active: "Issue invoices automatically", activeHint: "The invoice language is selected when the merchant confirms the order. Online and cash-on-delivery invoices are issued when delivery is confirmed.", identity: "Billing identity", legalName: "Legal seller name", address: "Billing address", country: "Country", email: "Billing contact email", issuer: "Approved issuer scope", issuerHint: "Stores belonging to the same legal issuer must use the same scope to share one sequence.", series: "Series prefix", taxes: "VAT and tax treatment", taxRate: "Store tax rate (%)", taxRateHint: "Use 0% when all products are tax-exempt.", taxRateRequired: "Enter the store tax percentage. Use 0% if all products are exempt.", taxRateInvalid: "The store tax percentage must be between 0% and 100%.", inclusive: "Entered prices include tax", wording: "Exemption or tax wording", shipping: "Shipping", threshold: "Free-shipping threshold", thresholdHint: "Applied only when the discounted merchandise subtotal, excluding shipping and tax, is strictly greater than the threshold.", preview: "PDF preview", previewAction: "Refresh preview", identifiers: "Legal identifiers" },
-  fr: { title: "Facturation", intro: "Configurez l’identité légale et la base fiscale capturées lors de l’émission.", active: "Émettre automatiquement les factures", activeHint: "La langue est choisie lorsque le marchand confirme la commande. Les factures en ligne et à la livraison sont émises après confirmation de la livraison.", identity: "Identité de facturation", legalName: "Raison sociale", address: "Adresse de facturation", country: "Pays", email: "E-mail de facturation", issuer: "Périmètre émetteur approuvé", issuerHint: "Les boutiques du même émetteur légal doivent partager ce périmètre et la même séquence.", series: "Préfixe de série", taxes: "TVA et traitement fiscal", taxRate: "Taux de taxe de la boutique (%)", taxRateHint: "Utilisez 0 % lorsque tous les produits sont exonérés.", taxRateRequired: "Saisissez le taux de taxe de la boutique. Utilisez 0 % si tous les produits sont exonérés.", taxRateInvalid: "Le taux de taxe de la boutique doit être compris entre 0 % et 100 %.", inclusive: "Les prix saisis incluent la taxe", wording: "Mention d’exonération ou fiscale", shipping: "Livraison", threshold: "Seuil de livraison gratuite", thresholdHint: "S’applique uniquement lorsque le sous-total articles remisé, hors livraison et taxes, est strictement supérieur au seuil.", preview: "Aperçu PDF", previewAction: "Actualiser l’aperçu", identifiers: "Identifiants légaux" },
-  ar: { title: "الفوترة", intro: "إعداد الهوية القانونية والأساس الضريبي المحفوظ عند إصدار الفاتورة.", active: "إصدار الفواتير تلقائياً", activeHint: "يختار التاجر لغة الفاتورة عند تأكيد الطلب. تُصدر فواتير الدفع الإلكتروني والدفع عند الاستلام بعد تأكيد التوصيل.", identity: "هوية الفوترة", legalName: "الاسم القانوني للبائع", address: "عنوان الفوترة", country: "البلد", email: "بريد الفوترة", issuer: "نطاق المُصدر المعتمد", issuerHint: "يجب أن تستخدم المتاجر التابعة لنفس المُصدر القانوني النطاق نفسه لتشارك تسلسلاً واحداً.", series: "بادئة السلسلة", taxes: "الضريبة والمعالجة الجبائية", taxRate: "نسبة ضريبة المتجر (%)", taxRateHint: "استخدم 0٪ عندما تكون جميع المنتجات معفاة من الضريبة.", taxRateRequired: "أدخل نسبة ضريبة المتجر، واستخدم 0٪ إذا كانت جميع المنتجات معفاة.", taxRateInvalid: "يجب أن تكون نسبة ضريبة المتجر بين 0٪ و100٪.", inclusive: "الأسعار المدخلة تشمل الضريبة", wording: "صيغة الإعفاء أو الضريبة", shipping: "الشحن", threshold: "حد الشحن المجاني", thresholdHint: "يُطبق فقط عندما يكون مجموع المنتجات بعد الخصم، دون الشحن والضريبة، أكبر بشكل صارم من الحد.", preview: "معاينة PDF", previewAction: "تحديث المعاينة", identifiers: "المعرفات القانونية" },
+  en: { title: "Invoicing", intro: "Configure the legal identity and tax basis captured when an invoice is issued.", active: "Issue invoices automatically", activeHint: "The invoice language is selected when the merchant confirms the order. Online and cash-on-delivery invoices are issued when delivery is confirmed.", identity: "Billing identity", legalName: "Legal seller name", address: "Billing address", country: "Country", email: "Billing contact email", issuer: "Approved issuer scope", issuerHint: "Stores belonging to the same legal issuer must use the same scope to share one sequence.", series: "Series prefix", taxes: "VAT and tax treatment", taxRate: "Store tax rate (%)", taxRateHint: "Use 0% when all products are tax-exempt.", taxRateRequired: "Enter the store tax percentage. Use 0% if all products are exempt.", taxRateInvalid: "The store tax percentage must be between 0% and 100%.", inclusive: "Entered prices include tax", wording: "Exemption or tax wording", shipping: "Shipping", threshold: "Free-shipping threshold", thresholdHint: "Applied only when the discounted merchandise subtotal, excluding shipping and tax, is strictly greater than the threshold.", preview: "PDF preview", previewAction: "Refresh preview", identifiers: "Legal identifiers", reviewTitle: "Review invoice information", reviewIntro: "Please confirm the information entered. Empty fields will remain blank on future invoices until you complete them.", completed: "Completed fields", missing: "Empty fields", noMissing: "All invoice fields are completed.", confirmSave: "Confirm and save" },
+  fr: { title: "Facturation", intro: "Configurez l’identité légale et la base fiscale capturées lors de l’émission.", active: "Émettre automatiquement les factures", activeHint: "La langue est choisie lorsque le marchand confirme la commande. Les factures en ligne et à la livraison sont émises après confirmation de la livraison.", identity: "Identité de facturation", legalName: "Raison sociale", address: "Adresse de facturation", country: "Pays", email: "E-mail de facturation", issuer: "Périmètre émetteur approuvé", issuerHint: "Les boutiques du même émetteur légal doivent partager ce périmètre et la même séquence.", series: "Préfixe de série", taxes: "TVA et traitement fiscal", taxRate: "Taux de taxe de la boutique (%)", taxRateHint: "Utilisez 0 % lorsque tous les produits sont exonérés.", taxRateRequired: "Saisissez le taux de taxe de la boutique. Utilisez 0 % si tous les produits sont exonérés.", taxRateInvalid: "Le taux de taxe de la boutique doit être compris entre 0 % et 100 %.", inclusive: "Les prix saisis incluent la taxe", wording: "Mention d’exonération ou fiscale", shipping: "Livraison", threshold: "Seuil de livraison gratuite", thresholdHint: "S’applique uniquement lorsque le sous-total articles remisé, hors livraison et taxes, est strictement supérieur au seuil.", preview: "Aperçu PDF", previewAction: "Actualiser l’aperçu", identifiers: "Identifiants légaux", reviewTitle: "Vérifier les informations de facturation", reviewIntro: "Veuillez confirmer les informations saisies. Les champs vides resteront absents des prochaines factures jusqu’à ce que vous les complétiez.", completed: "Champs renseignés", missing: "Champs vides", noMissing: "Toutes les informations de facturation sont renseignées.", confirmSave: "Confirmer et enregistrer" },
+  ar: { title: "الفوترة", intro: "إعداد الهوية القانونية والأساس الضريبي المحفوظ عند إصدار الفاتورة.", active: "إصدار الفواتير تلقائياً", activeHint: "يختار التاجر لغة الفاتورة عند تأكيد الطلب. تُصدر فواتير الدفع الإلكتروني والدفع عند الاستلام بعد تأكيد التوصيل.", identity: "هوية الفوترة", legalName: "الاسم القانوني للبائع", address: "عنوان الفوترة", country: "البلد", email: "بريد الفوترة", issuer: "نطاق المُصدر المعتمد", issuerHint: "يجب أن تستخدم المتاجر التابعة لنفس المُصدر القانوني النطاق نفسه لتشارك تسلسلاً واحداً.", series: "بادئة السلسلة", taxes: "الضريبة والمعالجة الجبائية", taxRate: "نسبة ضريبة المتجر (%)", taxRateHint: "استخدم 0٪ عندما تكون جميع المنتجات معفاة من الضريبة.", taxRateRequired: "أدخل نسبة ضريبة المتجر، واستخدم 0٪ إذا كانت جميع المنتجات معفاة.", taxRateInvalid: "يجب أن تكون نسبة ضريبة المتجر بين 0٪ و100٪.", inclusive: "الأسعار المدخلة تشمل الضريبة", wording: "صيغة الإعفاء أو الضريبة", shipping: "الشحن", threshold: "حد الشحن المجاني", thresholdHint: "يُطبق فقط عندما يكون مجموع المنتجات بعد الخصم، دون الشحن والضريبة، أكبر بشكل صارم من الحد.", preview: "معاينة PDF", previewAction: "تحديث المعاينة", identifiers: "المعرفات القانونية", reviewTitle: "مراجعة معلومات الفوترة", reviewIntro: "يرجى تأكيد المعلومات المدخلة. ستبقى الحقول الفارغة غير ظاهرة في الفواتير القادمة إلى أن تستكملها.", completed: "الحقول المكتملة", missing: "الحقول الفارغة", noMissing: "جميع معلومات الفوترة مكتملة.", confirmSave: "تأكيد وحفظ" },
 } as const;
 
 const SEO_COPY = {
@@ -106,6 +106,7 @@ export function SettingsPage() {
   const [invoicePreview, setInvoicePreview] = useState("");
   const [previewBusy, setPreviewBusy] = useState(false);
   const [invoiceError, setInvoiceError] = useState("");
+  const [invoiceReviewOpen, setInvoiceReviewOpen] = useState(false);
   const [logoBusy, setLogoBusy] = useState(false);
   const [emailRoute, setEmailRoute] = useState<StoreEmailForwarding | null>(null);
   const [forwardDestination, setForwardDestination] = useState("");
@@ -133,6 +134,10 @@ export function SettingsPage() {
   useEffect(() => {
     if (config) setForm(config);
   }, [config]);
+
+  useEffect(() => {
+    if (form && !form.invoice_issuance_available && section === "invoicing") setSection("general");
+  }, [form?.invoice_issuance_available, section]);
 
   useEffect(() => () => { if (invoicePreview) URL.revokeObjectURL(invoicePreview); }, [invoicePreview]);
 
@@ -183,12 +188,8 @@ export function SettingsPage() {
     }
   }
 
-  async function save() {
+  async function persistSave() {
     if (!store || !form) return;
-    if (form.invoice_enabled && form.invoice_tax_rate === null) {
-      setInvoiceError(invoiceCopy.taxRateRequired);
-      return;
-    }
     if (form.invoice_tax_rate !== null && (form.invoice_tax_rate < 0 || form.invoice_tax_rate > 100)) {
       setInvoiceError(invoiceCopy.taxRateInvalid);
       return;
@@ -217,15 +218,31 @@ export function SettingsPage() {
       await api.patchConfig(store.id, payload);
       toast.push("success", t(locale, "settings.saved"));
       reload();
+      return true;
     } catch (err) {
       if (section === "invoicing" && err instanceof ApiError) {
         const messages = Object.entries(err.payload ?? {}).flatMap(([field, value]) => Array.isArray(value) ? value.map((message) => field === "invoice_tax_rate" ? `${invoiceCopy.taxRate}: ${String(message)}` : String(message)) : []);
         setInvoiceError(messages.join(" · ") || err.detail);
       }
       toast.push("error", friendlyError(err, locale, "settings.saveFailed"));
+      return false;
     } finally {
       setSaving(false);
     }
+  }
+
+  function save() {
+    if (!form) return;
+    if (section === "invoicing") {
+      if (form.invoice_tax_rate !== null && (form.invoice_tax_rate < 0 || form.invoice_tax_rate > 100)) {
+        setInvoiceError(invoiceCopy.taxRateInvalid);
+        return;
+      }
+      setInvoiceError("");
+      setInvoiceReviewOpen(true);
+      return;
+    }
+    void persistSave();
   }
 
   const closeDelete = useCallback((force = false) => {
@@ -265,6 +282,19 @@ export function SettingsPage() {
     return <div className="card"><PageLoader /></div>;
   }
 
+  const invoiceFields = [
+    [invoiceCopy.legalName, form.invoice_legal_name],
+    [invoiceCopy.email, form.invoice_contact_email],
+    [invoiceCopy.country, form.invoice_country],
+    [invoiceCopy.address, form.invoice_billing_address],
+    [invoiceCopy.issuer, form.invoice_issuer_scope],
+    [invoiceCopy.series, form.invoice_series_prefix],
+    [invoiceCopy.taxRate, form.invoice_tax_rate],
+    ...["ice", "if", "tp", "rc"].map((key) => [key.toUpperCase(), form.invoice_identifiers?.[key]]),
+  ] as Array<[string, string | number | null | undefined]>;
+  const completedInvoiceFields = invoiceFields.filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "").map(([label]) => label);
+  const missingInvoiceFields = invoiceFields.filter(([, value]) => value === null || value === undefined || String(value).trim() === "").map(([label]) => label);
+
   return (
     <div>
       <div className="page-head">
@@ -300,9 +330,9 @@ export function SettingsPage() {
           {isOwner && <a className={`settings-link${section === "payment" ? " active" : ""}`} href="#payment" onClick={(e) => { e.preventDefault(); setSection("payment"); }}>
             <FiDollarSign style={{ marginInlineEnd: 8, verticalAlign: -2 }} /> {paymentCopy.title}
           </a>}
-          <a className={`settings-link${section === "invoicing" ? " active" : ""}`} href="#invoicing" onClick={(e) => { e.preventDefault(); setSection("invoicing"); }}>
+          {form.invoice_issuance_available && <a className={`settings-link${section === "invoicing" ? " active" : ""}`} href="#invoicing" onClick={(e) => { e.preventDefault(); setSection("invoicing"); }}>
             <FiFileText style={{ marginInlineEnd: 8, verticalAlign: -2 }} /> {invoiceCopy.title}
-          </a>
+          </a>}
           <a className={`settings-link${section === "storefront" ? " active" : ""}`} href="#storefront" onClick={(e) => { e.preventDefault(); setSection("storefront"); }}>
             <FiLayout style={{ marginInlineEnd: 8, verticalAlign: -2 }} /> {t(locale, "settings.storefront")}
           </a>
@@ -526,6 +556,7 @@ export function SettingsPage() {
           {section === "invoicing" && (
             <div className="invoice-settings">
               <header className="payment-settings-head"><span><FiFileText /></span><div><h2>{invoiceCopy.title}</h2><p>{invoiceCopy.intro}</p></div></header>
+              <p className="field-hint" aria-live="polite">{invoiceCopy.completed}: {completedInvoiceFields.length}/{invoiceFields.length} · {invoiceCopy.missing}: {missingInvoiceFields.length}</p>
               {invoiceError && <p className="field-error" role="alert">{invoiceError}</p>}
               <div className="form-section">
                 <label className="toggle"><input type="checkbox" checked={form.invoice_enabled} onChange={(e) => set("invoice_enabled", e.target.checked)} /><span className="toggle-track" /><span className="toggle-label">{invoiceCopy.active}</span></label>
@@ -677,6 +708,24 @@ export function SettingsPage() {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        open={invoiceReviewOpen}
+        title={invoiceCopy.reviewTitle}
+        loading={saving}
+        confirmLabel={invoiceCopy.confirmSave}
+        onClose={() => setInvoiceReviewOpen(false)}
+        onConfirm={async () => {
+          if (await persistSave()) setInvoiceReviewOpen(false);
+        }}
+        body={(
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <p>{invoiceCopy.reviewIntro}</p>
+            <div><strong>{invoiceCopy.completed} ({completedInvoiceFields.length})</strong><p>{completedInvoiceFields.join(" · ") || "—"}</p></div>
+            <div><strong>{invoiceCopy.missing} ({missingInvoiceFields.length})</strong><p>{missingInvoiceFields.join(" · ") || invoiceCopy.noMissing}</p></div>
+          </div>
+        )}
+      />
 
       <ConfirmModal
         open={deleteOpen}

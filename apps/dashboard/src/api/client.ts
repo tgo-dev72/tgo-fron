@@ -244,6 +244,7 @@ export interface StoreConfig {
   free_shipping_threshold: number | null;
   free_shipping_currency: string;
   invoice_enabled: boolean;
+  invoice_issuance_available: boolean;
   invoice_legal_name: string;
   invoice_billing_address: string;
   invoice_country: string;
