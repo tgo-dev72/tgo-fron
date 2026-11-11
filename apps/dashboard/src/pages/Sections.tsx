@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FiCheck, FiEdit2, FiLayers, FiPlus, FiSave, FiTrash2, FiUpload, FiX } from "react-icons/fi";
+import { FiCheck, FiChevronDown, FiDownload, FiEdit2, FiLayers, FiPlus, FiSave, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import { FaBoxOpen, FaGem, FaHeart, FaLeaf, FaShoePrints, FaTshirt } from "react-icons/fa";
 import { FaBagShopping } from "react-icons/fa6";
 import type { IconType } from "react-icons";
@@ -133,6 +133,7 @@ export function SectionsPage() {
   const [deleteError, setDeleteError] = useState("");
   const [importing, setImporting] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
+  const templateMenu = useRef<HTMLDetailsElement>(null);
 
   const { data: sections, loading, error, reload } = useAsync<CatalogSection[]>(
     () => (store ? api.listSections(store.id) : Promise.resolve([])),
@@ -255,6 +256,22 @@ export function SectionsPage() {
     }
   }
 
+  async function downloadImportTemplate(format: "xlsx" | "csv" | "json") {
+    if (!store) return;
+    templateMenu.current?.removeAttribute("open");
+    try {
+      const blob = await api.sectionImportTemplate(store.id, format);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sections-import-template.${format}`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.push("error", friendlyError(error, locale, "sections.templateFailed"));
+    }
+  }
+
   function patchAttr(i: number, patch: Partial<AttrDraft>) {
     setDraft((d) => ({ ...d, attrs: d.attrs.map((a, idx) => (idx === i ? { ...a, ...patch } : a)) }));
   }
@@ -271,6 +288,14 @@ export function SectionsPage() {
           <p className="d-subtitle">{t(locale, "sections.subtitle")}</p>
         </div>
         <div className="page-head-actions">
+          <details className="catalog-transfer-menu" ref={templateMenu}>
+            <summary className="btn btn-secondary"><FiDownload /> {t(locale, "sections.downloadTemplate")} <FiChevronDown /></summary>
+            <div className="catalog-transfer-options" role="menu">
+              <button type="button" role="menuitem" onClick={() => void downloadImportTemplate("xlsx")}><strong>Excel</strong><small>.xlsx</small></button>
+              <button type="button" role="menuitem" onClick={() => void downloadImportTemplate("csv")}><strong>CSV</strong><small>.csv</small></button>
+              <button type="button" role="menuitem" onClick={() => void downloadImportTemplate("json")}><strong>JSON</strong><small>.json</small></button>
+            </div>
+          </details>
           <button className="btn btn-secondary" onClick={() => importInput.current?.click()} disabled={importing || saving || deleting}>
             {importing ? <span className="spin" /> : <FiUpload />} {importing ? t(locale, "sections.importing") : t(locale, "sections.importFile")}
           </button>

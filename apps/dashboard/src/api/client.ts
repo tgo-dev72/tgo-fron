@@ -1337,6 +1337,11 @@ export const api = {
       form,
     );
   },
+  async sectionImportTemplate(storeId: number, format: "xlsx" | "csv" | "json") {
+    const response = await fetch(`${API_BASE}/api/catalog/store/${storeId}/sections/import-template/?file_format=${format}`, { credentials: "include" });
+    if (!response.ok) throw new ApiError(response.status, `Template download failed (${response.status}).`);
+    return response.blob();
+  },
   updateSection(storeId: number, sectionId: number, data: Record<string, unknown>) {
     return request<CatalogSection>(`/api/catalog/store/${storeId}/sections/${sectionId}/`, json("PATCH", data));
   },
