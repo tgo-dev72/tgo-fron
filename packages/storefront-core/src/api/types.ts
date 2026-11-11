@@ -30,6 +30,7 @@ export interface CatalogSection {
   id: number;
   key: string;
   label: string;
+  label_translations?: Partial<Record<"en" | "fr" | "ar", string>>;
   description?: string;
   thumbnail?: string;
   is_visible?: boolean;

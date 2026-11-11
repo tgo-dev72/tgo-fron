@@ -55,6 +55,7 @@ interface AttrDraft {
 interface SectionDraft {
   id: number | null;
   label: string;
+  label_translations: Record<"en" | "fr" | "ar", string>;
   key: string;
   icon: string;
   sort_order: number;
@@ -105,8 +106,14 @@ function toDefs(attrs: AttrDraft[]): Partial<AttributeDef>[] {
   }));
 }
 
-const emptyDraft = (): SectionDraft => ({ id: null, label: "", key: "", icon: "FaTshirt:fa", sort_order: 0, is_visible: true, thumbnail: "", attrs: [] });
+const emptyNames = (): Record<"en" | "fr" | "ar", string> => ({ en: "", fr: "", ar: "" });
+const emptyDraft = (): SectionDraft => ({ id: null, label: "", label_translations: emptyNames(), key: "", icon: "FaTshirt:fa", sort_order: 0, is_visible: true, thumbnail: "", attrs: [] });
 const emptyAttr = (): AttrDraft => ({ key: "", label: "", type: "select", level: "variant", required: false, options: "" });
+
+function translatedName(section: Pick<CatalogSection, "label" | "label_translations">, locale: "en" | "fr" | "ar"): string {
+  const translations = section.label_translations ?? emptyNames();
+  return translations[locale]?.trim() || translations.en?.trim() || Object.values(translations).find((value) => value?.trim()) || section.label;
+}
 
 export function SectionsPage() {
   const { store } = useStore();
@@ -117,6 +124,7 @@ export function SectionsPage() {
   const routeState = location.state as SectionRouteState | null;
   const [open, setOpen] = useState(Boolean(routeState?.createSection));
   const [draft, setDraft] = useState<SectionDraft>(emptyDraft());
+  const [nameLanguage, setNameLanguage] = useState<"en" | "fr" | "ar">(locale);
   const [saving, setSaving] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [bannerProgress, setBannerProgress] = useState(0);
@@ -131,11 +139,14 @@ export function SectionsPage() {
 
   function beginCreate() {
     setDraft(emptyDraft());
+    setNameLanguage(locale);
     setOpen(true);
   }
 
   function beginEdit(s: CatalogSection) {
-    setDraft({ id: s.id, label: s.label, key: s.key, icon: s.icon, sort_order: s.sort_order, is_visible: s.is_visible ?? true, thumbnail: s.thumbnail ?? "", attrs: toAttrs(s.attribute_defs ?? []) });
+    const names = { ...emptyNames(), ...(s.label_translations ?? {}), en: s.label_translations?.en || s.label };
+    setDraft({ id: s.id, label: names.en || s.label, label_translations: names, key: s.key, icon: s.icon, sort_order: s.sort_order, is_visible: s.is_visible ?? true, thumbnail: s.thumbnail ?? "", attrs: toAttrs(s.attribute_defs ?? []) });
+    setNameLanguage(locale);
     setOpen(true);
   }
 
@@ -152,12 +163,13 @@ export function SectionsPage() {
 
   async function save() {
     if (!store) return;
-    if (!draft.label.trim()) {
+    const availableName = draft.label_translations.en.trim() || Object.values(draft.label_translations).find((value) => value.trim()) || "";
+    if (!availableName) {
       toast.push("error", t(locale, "sections.nameRequired"));
       return;
     }
-    const key = draft.key || slugify(draft.label);
-    const payload = { label: draft.label.trim(), key, icon: draft.icon, sort_order: draft.sort_order, is_visible: draft.is_visible, attribute_defs: toDefs(draft.attrs) };
+    const key = draft.key || slugify(availableName);
+    const payload = { label: availableName, label_translations: draft.label_translations, key, icon: draft.icon, sort_order: draft.sort_order, is_visible: draft.is_visible, attribute_defs: toDefs(draft.attrs) };
     setSaving(true);
     try {
       if (draft.id) {
@@ -258,10 +270,12 @@ export function SectionsPage() {
             <div className="editor-row" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               <div className="field">
                 <label className="field-label">{t(locale, "sections.nameLabel")}</label>
+                <div className="theme-language-tabs"><div>{(["en", "fr", "ar"] as const).map((language) => <button key={language} type="button" className={nameLanguage === language ? "is-active" : ""} onClick={() => setNameLanguage(language)}>{language.toUpperCase()}</button>)}</div></div>
                 <input
                   className="input"
-                  value={draft.label}
-                  onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value, key: d.id ? d.key : slugify(e.target.value) }))}
+                  dir={nameLanguage === "ar" ? "rtl" : "ltr"}
+                  value={draft.label_translations[nameLanguage]}
+                  onChange={(e) => setDraft((d) => { const label_translations = { ...d.label_translations, [nameLanguage]: e.target.value }; const fallback = label_translations.en.trim() || Object.values(label_translations).find((value) => value.trim()) || ""; return { ...d, label: fallback, label_translations, key: d.id ? d.key : slugify(fallback) }; })}
                   placeholder={t(locale, "sections.namePh")}
                 />
                 <span className="field-hint">{t(locale, "sections.nameHint")}</span>
@@ -359,7 +373,7 @@ export function SectionsPage() {
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button className="btn btn-primary" onClick={save} disabled={saving || !draft.label.trim() || !Number.isSafeInteger(draft.sort_order) || draft.sort_order < 0}>
+              <button className="btn btn-primary" onClick={save} disabled={saving || !Object.values(draft.label_translations).some((value) => value.trim()) || !Number.isSafeInteger(draft.sort_order) || draft.sort_order < 0}>
                 {saving ? <span className="spin spin-dark" /> : <FiSave />} {draft.id ? t(locale, "sections.saveChanges") : t(locale, "sections.createSection")}
               </button>
             </div>
@@ -390,7 +404,7 @@ export function SectionsPage() {
                     <Icon />
                   </div>
                   <div className="section-card-info">
-                    <div className="section-card-name">{s.label}</div>
+                    <div className="section-card-name">{translatedName(s, locale)}</div>
                     <div className="section-card-key">@{s.key}</div>
                     {s.is_visible === false && <span className="field-hint">{t(locale, "sections.hidden")}</span>}
                   </div>
@@ -424,7 +438,7 @@ export function SectionsPage() {
         open={deleteTarget !== null}
         title={t(locale, "sections.delete")}
         body={<>
-          <p>{deleteTarget ? t(locale, "sections.deleteConfirm", deleteTarget.label) : ""}</p>
+          <p>{deleteTarget ? t(locale, "sections.deleteConfirm", translatedName(deleteTarget, locale)) : ""}</p>
           {deleteError && <p className="field-error" role="alert">{deleteError}</p>}
         </>}
         danger
