@@ -69,6 +69,7 @@ const copy = {
     discounted: "Products currently discounted", top_rated: "Best-rated products", grid: "Grid", slider: "Horizontal slider",
     image_first: "Image first", text_first: "Text first", previewProduct: "Product", previewCategory: "Category",
     bannerWidth: "Banner width", bannerHeight: "Banner height", full: "Full width", contained: "Contained", compact: "Compact", standard: "Standard", tall: "Tall",
+    darkEffect: "Dark image effect", bannerText: "Show banner text", bannerButton: "Show banner button",
     homeDestination: "Home page", catalogDestination: "All products", categoryDestinations: "Categories", pageDestinations: "Pages",
   },
   fr: {
@@ -91,6 +92,7 @@ const copy = {
     discounted: "Produits actuellement en promotion", top_rated: "Produits les mieux notés", grid: "Grille", slider: "Carrousel horizontal",
     image_first: "Image en premier", text_first: "Texte en premier", previewProduct: "Produit", previewCategory: "Catégorie",
     bannerWidth: "Largeur de la bannière", bannerHeight: "Hauteur de la bannière", full: "Pleine largeur", contained: "Contenue", compact: "Compacte", standard: "Standard", tall: "Haute",
+    darkEffect: "Effet sombre sur l’image", bannerText: "Afficher le texte de la bannière", bannerButton: "Afficher le bouton de la bannière",
     homeDestination: "Page d’accueil", catalogDestination: "Tous les produits", categoryDestinations: "Catégories", pageDestinations: "Pages",
   },
   ar: {
@@ -113,6 +115,7 @@ const copy = {
     discounted: "المنتجات المخفضة حالياً", top_rated: "المنتجات الأعلى تقييماً", grid: "شبكة", slider: "شريط أفقي",
     image_first: "الصورة أولاً", text_first: "النص أولاً", previewProduct: "منتج", previewCategory: "فئة",
     bannerWidth: "عرض البانر", bannerHeight: "ارتفاع البانر", full: "عرض كامل", contained: "داخل المحتوى", compact: "مدمج", standard: "قياسي", tall: "مرتفع",
+    darkEffect: "التأثير الداكن على الصورة", bannerText: "إظهار نص الواجهة", bannerButton: "إظهار زر الواجهة",
     homeDestination: "الصفحة الرئيسية", catalogDestination: "كل المنتجات", categoryDestinations: "الفئات", pageDestinations: "الصفحات",
   },
 } as const;
@@ -120,11 +123,11 @@ const copy = {
 const localized = (en = "", fr = "", ar = ""): LocalizedStorefrontText => ({ en, fr, ar });
 
 function newSection(type: StorefrontSectionType, theme: string = "basic"): StorefrontPageSection {
-  const id = `${type}-${Date.now().toString(36)}`;
+  const id = `${type.replace(/_/g, "-")}-${Date.now().toString(36)}`;
   let settings: StorefrontPageSection["settings"];
   if (type === "announcement") settings = { items: [newAnnouncementItem()] };
   else if (type === "slideshow") settings = { slides: [newSlide()], autoplay: false, interval: 3 };
-  else if (type === "hero") settings = { eyebrow: localized(), title: localized(), subtitle: localized(), cta_label: localized(), cta_url: "#products", image_url: "" };
+  else if (type === "hero") settings = { eyebrow: localized(), title: localized(), subtitle: localized(), cta_label: localized(), cta_url: "#products", image_url: "", show_overlay: true, show_text: true, show_button: true };
   else if (type === "promotional_banner") settings = { title: localized(), body: localized(), cta_label: localized(), cta_url: "", image_url: "", width: "full", height: "standard" };
   else if (type === "collections") settings = { title: localized("Shop by category", "Acheter par catégorie", "تسوق حسب الفئة"), limit: 6 };
   else if (type === "products") settings = { title: localized("Featured products", "Produits à la une", "منتجات مختارة"), source: "featured", limit: 8, layout: "grid" };
@@ -451,7 +454,7 @@ export function ThemeEditorPage() {
               if (section.type === "slideshow") return <Slideshow key={section.id} slides={section.settings.slides as StorefrontSlide[]} locale={contentLanguage} preview mobilePreview={device === "mobile"} />;
               const title = localValue(section, "title", contentLanguage);
               if (section.type === "announcement") { const items = section.settings.items as StorefrontAnnouncementItem[] | undefined; return <div key={section.id} className="tp-announcement">{items?.map((item) => item.text[contentLanguage]).filter(Boolean).join("   •   ") || localValue(section, "text", contentLanguage) || c.announcement}</div>; }
-              if (section.type === "hero") return <section key={section.id} className="tp-hero" style={section.settings.image_url ? { backgroundImage: `linear-gradient(90deg, rgb(0 0 0 / 45%), transparent), url("${optimizedImageUrl(String(section.settings.image_url), { width: 1200, crop: "fill" }).replace(/"/g, "%22")}")`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}><small>{localValue(section, "eyebrow", contentLanguage)}</small><h2>{title || store?.name}</h2><RichText html={localValue(section, "subtitle", contentLanguage)} className="tp-rich-copy" />{localValue(section, "cta_label", contentLanguage) && <span className="tp-preview-cta">{localValue(section, "cta_label", contentLanguage)}</span>}</section>;
+              if (section.type === "hero") { const image = String(section.settings.image_url || ""); const dark = section.settings.show_overlay !== false; const backgroundImage = image ? `${dark ? "linear-gradient(90deg, rgb(0 0 0 / 45%), transparent), " : ""}url("${optimizedImageUrl(image, { width: 1200, crop: "fill" }).replace(/"/g, "%22")}")` : undefined; return <section key={section.id} className="tp-hero" style={backgroundImage ? { backgroundImage, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{section.settings.show_text !== false && <><small>{localValue(section, "eyebrow", contentLanguage)}</small><h2>{title || store?.name}</h2><RichText html={localValue(section, "subtitle", contentLanguage)} className="tp-rich-copy" /></>}{section.settings.show_button !== false && localValue(section, "cta_label", contentLanguage) && <span className="tp-preview-cta">{localValue(section, "cta_label", contentLanguage)}</span>}</section>; }
               if (section.type === "promotional_banner") return <section key={section.id} className={`tp-promo-banner is-${String(section.settings.width)} is-${String(section.settings.height)}`}>{section.settings.image_url ? <OptimizedImage src={String(section.settings.image_url)} widthHint={1200} widths={[480, 720, 960, 1200]} sizes="100vw" alt="" /> : <i />}<div><h3>{title || c.promotional_banner}</h3><RichText html={localValue(section, "body", contentLanguage)} className="tp-rich-copy" />{localValue(section, "cta_label", contentLanguage) && <span className="tp-preview-cta">{localValue(section, "cta_label", contentLanguage)}</span>}</div></section>;
               if (section.type === "collections") return <section key={section.id} className="tp-section"><h3>{title}</h3>{catalogLoading ? <p>{c.previewCategory}…</p> : catalogError ? <p>{c.previewCategory}: unavailable</p> : previewCategories.length ? <div className="tp-categories">{previewCategories.slice(0, Math.min(4, Number(section.settings.limit) || 4)).map((category) => <span key={category.id} style={category.thumbnail ? { backgroundImage: `url("${optimizedImageUrl(category.thumbnail, { width: 480, crop: "fill" }).replace(/"/g, "%22")}")`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>{category.label}</span>)}</div> : <p>{c.previewCategory}: 0</p>}</section>;
               if (section.type === "products") {
@@ -504,6 +507,9 @@ export function ThemeEditorPage() {
               {Object.prototype.hasOwnProperty.call(selected.settings, "image_url") && <div className="field"><span className="field-label">{c.image}</span>{String(selected.settings.image_url || "") && <OptimizedImage className={`theme-upload-preview${uploading ? " is-uploading" : ""}`} src={String(selected.settings.image_url)} widthHint={720} widths={[360, 540, 720]} sizes="360px" alt="" />}<label className={`theme-upload-button${uploading ? " is-uploading" : ""}`}><FiUpload /> {uploading ? `${uploadProgress}%` : c.chooseImage}{uploading && <span className="theme-upload-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={uploadProgress}><i style={{ width: `${uploadProgress}%` }} /></span>}<input type="file" aria-label={c.chooseImage} accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file); event.target.value = ""; }} /></label><small className="field-hint">{c.imageHint}</small></div>}
               {Object.prototype.hasOwnProperty.call(selected.settings, "limit") && <label className="field"><span className="field-label">{c.limit}</span><input className="input" type="number" min="1" max={selected.type === "theme_feature" ? 8 : 24} value={Number(selected.settings.limit)} onChange={(event) => setSetting("limit", Math.max(1, Math.min(selected.type === "theme_feature" ? 8 : 24, Number(event.target.value))))} /></label>}
               {selected.type === "products" && <><SelectField label={c.source} value={String(selected.settings.source)} onChange={(value) => setSetting("source", value)} options={["featured", "newest", "discounted", "top_rated"].map((value) => ({ value, label: c[value as "featured"] }))} /><SelectField label={c.layout} value={String(selected.settings.layout)} onChange={(value) => setSetting("layout", value)} options={[{ value: "grid", label: c.grid }, { value: "slider", label: c.slider }]} /></>}
+              {selected.type === "hero" && <div className="theme-product-toggles">{([
+                ["show_overlay", c.darkEffect], ["show_text", c.bannerText], ["show_button", c.bannerButton],
+              ] as const).map(([key, label]) => <label className="theme-check" key={key}><input type="checkbox" checked={selected.settings[key] !== false} onChange={(event) => setSetting(key, event.target.checked)} /><span>{label}</span></label>)}</div>}
               {selected.type === "image_text" && <SelectField label={c.alignment} value={String(selected.settings.alignment)} onChange={(value) => setSetting("alignment", value)} options={[{ value: "image_first", label: c.image_first }, { value: "text_first", label: c.text_first }]} />}
               {selected.type === "promotional_banner" && <><SelectField label={c.bannerWidth} value={String(selected.settings.width)} onChange={(value) => setSetting("width", value)} options={[{ value: "full", label: c.full }, { value: "contained", label: c.contained }]} /><SelectField label={c.bannerHeight} value={String(selected.settings.height)} onChange={(value) => setSetting("height", value)} options={[{ value: "compact", label: c.compact }, { value: "standard", label: c.standard }, { value: "tall", label: c.tall }]} /></>}
               {selected.type === "product_main" && <div className="theme-product-toggles">{([

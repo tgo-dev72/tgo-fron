@@ -1087,6 +1087,9 @@ export const api = {
   createStore(data: { name: string; slug: string; retail_type?: number | null }) {
     return request<Store>("/api/store/", json("POST", data));
   },
+  renameStore(storeId: number, name: string) {
+    return request<Store>(`/api/store/${storeId}/`, json("PATCH", { name }));
+  },
   startStorefront(requestId: number) {
     return request<StorefrontDeployment>(`/api/requests/${requestId}/scaffold`, json("POST", {}));
   },

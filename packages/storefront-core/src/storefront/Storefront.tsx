@@ -1278,6 +1278,9 @@ function CartConsumer({
                 cta={sectionText(section, "cta_label", locale)}
                 ctaHref={String(section.settings.cta_url || "#products")}
                 mediaMode={imageUrl ? "banner" : "split"}
+                showOverlay={section.settings.show_overlay !== false}
+                showText={section.settings.show_text !== false}
+                showButton={section.settings.show_button !== false}
               >
                 {imageUrl ? <OptimizedImage className="sf-configured-hero-image" src={imageUrl} widthHint={1600} widths={[640, 960, 1280, 1600, 2000]} sizes="100vw" alt={sectionText(section, "title", locale) || config.storeName} priority /> : null}
               </Hero>
@@ -1303,6 +1306,9 @@ function CartConsumer({
                   cta={sectionText(section, "cta_label", locale)}
                   ctaHref={String(section.settings.cta_url || "#products")}
                   mediaMode={imageUrl ? "banner" : "split"}
+                  showOverlay={section.settings.show_overlay !== false}
+                  showText={section.settings.show_text !== false}
+                  showButton={section.settings.show_button !== false}
                 >
                   {imageUrl
                     ? <OptimizedImage className="sf-configured-hero-image" src={imageUrl} widthHint={1600} widths={[640, 960, 1280, 1600, 2000]} sizes="100vw" alt={sectionText(section, "title", locale) || config.storeName} priority />

@@ -443,6 +443,7 @@ html:has(.sf-root[data-design="nexa"]) { --sf-scrollbar-document-thumb: #1264d8;
   background: linear-gradient(180deg, rgb(0 0 0 / 8%), rgb(0 0 0 / 34%));
   pointer-events: none;
 }
+.sf-hero-banner-overlay.is-clear { background: transparent; }
 .sf-hero-banner-overlay > div { display: grid; justify-items: center; gap: 12px; max-width: min(760px, 90vw); }
 .sf-hero-banner-title { margin: 0; color: inherit; font-family: var(--ds-font-display); font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 500; line-height: 1; letter-spacing: .08em; text-transform: uppercase; text-shadow: 0 2px 24px rgb(0 0 0 / 30%); }
 .sf-hero-banner-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }

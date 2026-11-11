@@ -582,6 +582,9 @@ export function Hero({
   ctaHref = "#products",
   children,
   mediaMode = "split",
+  showOverlay = true,
+  showText = true,
+  showButton = true,
 }: {
   locale: Locale;
   eyebrow?: string;
@@ -591,25 +594,30 @@ export function Hero({
   ctaHref?: string;
   children?: ReactNode;
   mediaMode?: "split" | "banner";
+  showOverlay?: boolean;
+  showText?: boolean;
+  showButton?: boolean;
 }) {
   const isRtl = dir(locale) === "rtl";
-  const ctaLabel = cta === undefined ? t(locale, "hero.cta") : cta.trim();
+  const ctaLabel = showButton ? (cta === undefined ? t(locale, "hero.cta") : cta.trim()) : "";
   const isBanner = Boolean(children) && mediaMode === "banner";
   return (
     <section id="top" className={`sf-hero sf-banner-fade ${children ? "has-media" : "is-copy-only"}${isBanner ? " is-banner" : ""}`}>
       {isBanner && <div className="sf-hero-media sf-hero-banner-media">{children}</div>}
-      {isBanner && (eyebrow || title || subtitle || ctaLabel) && <div className="sf-hero-banner-overlay"><div>
-        {eyebrow && <span className="sf-hero-banner-eyebrow">{eyebrow}</span>}
-        {title && <h1 className="sf-hero-banner-title">{title}</h1>}
-        {subtitle && <RichText html={subtitle} className="sf-hero-banner-subtitle" />}
+      {isBanner && (showOverlay || (showText && (eyebrow || title || subtitle)) || ctaLabel) && <div className={`sf-hero-banner-overlay${showOverlay ? "" : " is-clear"}`}><div>
+        {showText && eyebrow && <span className="sf-hero-banner-eyebrow">{eyebrow}</span>}
+        {showText && title && <h1 className="sf-hero-banner-title">{title}</h1>}
+        {showText && subtitle && <RichText html={subtitle} className="sf-hero-banner-subtitle" />}
         {ctaLabel && <a className="ds-btn sf-hero-banner-cta" href={ctaHref}>{ctaLabel} <IconArrow rtl={isRtl} /></a>}
       </div></div>}
       {!isBanner && <Container>
         <div className="sf-hero-layout">
-          <div className="sf-hero-copy">
+          {(showText || ctaLabel) && <div className="sf-hero-copy">
+            {showText && <>
             <Eyebrow>{eyebrow ?? t(locale, "hero.eyebrow")}</Eyebrow>
             <h1 className="ds-display-1 sf-hero-title">{title ?? t(locale, "hero.title")}</h1>
             <RichText html={subtitle ?? t(locale, "hero.subtitle")} className="ds-lead sf-hero-sub" />
+            </>}
             {ctaLabel && <a
               className="ds-btn ds-btn-primary sf-hero-cta"
               href={ctaHref}
@@ -622,7 +630,7 @@ export function Hero({
             >
               {ctaLabel} <IconArrow rtl={isRtl} />
             </a>}
-          </div>
+          </div>}
           {children && !isBanner && <div className="sf-hero-media">{children}</div>}
         </div>
       </Container>}

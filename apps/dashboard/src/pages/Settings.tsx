@@ -102,6 +102,7 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const [section, setSection] = useState<Section>("general");
   const [form, setForm] = useState<StoreConfig | null>(null);
+  const [storeName, setStoreName] = useState("");
   const [saving, setSaving] = useState(false);
   const [invoicePreview, setInvoicePreview] = useState("");
   const [previewBusy, setPreviewBusy] = useState(false);
@@ -134,6 +135,10 @@ export function SettingsPage() {
   useEffect(() => {
     if (config) setForm(config);
   }, [config]);
+
+  useEffect(() => {
+    setStoreName(store?.name ?? "");
+  }, [store?.id, store?.name]);
 
   useEffect(() => {
     if (form && !form.invoice_issuance_available && section === "invoicing") setSection("general");
@@ -197,6 +202,12 @@ export function SettingsPage() {
     setSaving(true);
     setInvoiceError("");
     try {
+      const nextStoreName = storeName.trim();
+      if (isOwner && nextStoreName && nextStoreName !== store.name) {
+        const renamed = await api.renameStore(store.id, nextStoreName);
+        updateStore(renamed);
+        setStoreName(renamed.name);
+      }
       const payload: Partial<StoreConfig> = {
         ...form,
         social_links: Object.fromEntries(
@@ -361,7 +372,7 @@ export function SettingsPage() {
                 <div className="form-2col">
                   <div className="field">
                     <label className="field-label">{t(locale, "settings.storeName")}</label>
-                    <input className="input" value={store?.name ?? ""} disabled />
+                    <input className="input" value={storeName} maxLength={100} disabled={!isOwner || saving} onChange={(event) => setStoreName(event.target.value)} />
                     <div className="field-hint">{t(locale, "settings.managedBy")}</div>
                   </div>
                   <div className="field">
