@@ -249,7 +249,13 @@ export function SectionsPage() {
       toast.push("success", t(locale, "sections.importComplete", result));
       reload();
     } catch (error) {
-      toast.push("error", friendlyError(error, locale, "sections.importFailed"));
+      if (error instanceof ApiError && error.code === "section_import_product_export") {
+        toast.push("error", t(locale, "sections.productExportWrongFile"));
+      } else if (error instanceof ApiError && error.status === 400 && error.message) {
+        toast.push("error", t(locale, "sections.importValidationError", { detail: error.message }));
+      } else {
+        toast.push("error", friendlyError(error, locale, "sections.importFailed"));
+      }
     } finally {
       setImporting(false);
       if (importInput.current) importInput.current.value = "";
