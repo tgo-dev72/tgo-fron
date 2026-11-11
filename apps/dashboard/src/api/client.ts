@@ -155,6 +155,10 @@ export interface SubscriptionStatus {
   latest_payment: SubscriptionPaymentStatus | null;
   payment: SubscriptionPaymentStatus | null;
   balances: Array<{ currency: string; balance: string; reserved: string; available: string }>;
+  usage?: {
+    account: Record<string, { used: number; limit: number; unlimited: boolean } | null>;
+    stores: Record<string, Record<string, { used: number; limit: number; unlimited: boolean } | null>>;
+  };
 }
 
 export interface StoreEmailForwarding {

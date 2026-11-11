@@ -48,6 +48,12 @@ export function SubscriptionPage() {
     && Boolean(entry.current_period_end)
     && new Date(entry.current_period_end as string).getTime() - Date.now() <= renewalWindowMs
   ));
+  const usageRows = [
+    ["stores.max_count", t(locale, "subscription.usageStores"), status?.usage?.account?.["stores.max_count"]],
+    ["team.max_members", t(locale, "subscription.usageTeam"), status?.usage?.account?.["team.max_members"]],
+    ["catalog.max_products", t(locale, "subscription.usageProducts"), store ? status?.usage?.stores?.[String(store.id)]?.["catalog.max_products"] : null],
+    ["marketing.email_monthly_sends", t(locale, "subscription.usageEmails"), store ? status?.usage?.stores?.[String(store.id)]?.["marketing.email_monthly_sends"] : null],
+  ].filter((row): row is [string, string, { used: number; limit: number; unlimited: boolean }] => Boolean(row[2]));
 
   useLayoutEffect(() => {
     if (!paymentReturn.current.isReturn) return;
@@ -134,6 +140,7 @@ export function SubscriptionPage() {
     {activeSubscriptions.map((active) => <section className="card subscription-current" key={`${active.plan?.id}-${active.selected_store?.id ?? "account"}`}>
       <div><span>{t(locale, "subscription.current")}</span><h2>{active.plan ? localizedPlanCopy(active.plan, locale).name : ""}</h2><p>{active.selected_store ? `${active.selected_store.name} · ` : ""}{t(locale, "subscription.activeUntil", { date: active.current_period_end ? new Date(active.current_period_end).toLocaleDateString(locale) : "—" })}</p></div>
       <b><FiCheck /> {t(locale, "subscription.active")}</b>
+      {usageRows.length > 0 && <dl className="subscription-usage">{usageRows.map(([key, label, usage]) => <div key={key}><dt>{label}</dt><dd>{usage.used.toLocaleString(locale)} / {usage.unlimited ? "∞" : usage.limit.toLocaleString(locale)}</dd></div>)}</dl>}
     </section>)}
     {error && <div className="subscription-notice error subscription-recovery"><FiAlertTriangle /><span>{error}</span>{resumeCheckout && <a className="btn btn-secondary btn-sm" href={resumeCheckout.url}>{t(locale, "subscription.resumeCheckout")}</a>}</div>}
     {(status?.balances ?? []).filter((balance) => Number(balance.balance) > 0).map((balance) => <section className="card subscription-balance" key={balance.currency}>
@@ -154,7 +161,7 @@ export function SubscriptionPage() {
           {plan.is_featured && <span className="subscription-featured"><FiZap /> {t(locale, "subscription.recommended")}</span>}
           <h2>{copy.name}</h2><p>{copy.description}</p>
           <strong>{Number(plan.price).toLocaleString(locale)} <small>{plan.currency}</small></strong>
-          <span className="subscription-period">{plan.is_free ? t(locale, "subscription.forever") : t(locale, "subscription.forDays", { days: plan.duration_days })}</span>
+          <span className="subscription-period">{plan.is_free ? t(locale, "subscription.freeForDays", { days: plan.duration_days }) : t(locale, "subscription.forDays", { days: plan.duration_days })}</span>
           <ul>
             {plan.benefits?.length
               ? plan.benefits.map((benefit) => {

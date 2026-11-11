@@ -70,7 +70,7 @@ const en: Dict = {
   subscription: {
     title: "Plans & billing", subtitle: "Choose the pack that fits your business and upgrade securely.",
     loading: "Loading subscription plans", current: "Current subscription", active: "Active",
-    activeUntil: "Access is active until {date}.", recommended: "Recommended", forever: "Free forever",
+    activeUntil: "Access is active until {date}.", recommended: "Recommended", forever: "Free forever", freeForDays: "Free for {days} days", usageStores: "Stores", usageTeam: "Team members", usageProducts: "Products", usageEmails: "Marketing emails",
     forDays: "for {days} days", currentPlan: "Current plan", freeAvailable: "Free plan available",
     upgrade: "Upgrade securely", renewNow: "Renew this pack", redirecting: "Opening secure payment…", selectStore: "Select a store before buying this pack.",
     checkoutFailed: "Could not start checkout.",
@@ -1214,7 +1214,7 @@ const fr: Dict = {
   subscription: {
     title: "Forfaits et facturation", subtitle: "Choisissez le forfait adapté à votre activité et passez au niveau supérieur en toute sécurité.",
     loading: "Chargement des forfaits", current: "Abonnement actuel", active: "Actif",
-    activeUntil: "Accès actif jusqu'au {date}.", recommended: "Recommandé", forever: "Gratuit à vie",
+    activeUntil: "Accès actif jusqu'au {date}.", recommended: "Recommandé", forever: "Gratuit à vie", freeForDays: "Gratuit pendant {days} jours", usageStores: "Boutiques", usageTeam: "Membres de l’équipe", usageProducts: "Produits", usageEmails: "E-mails marketing",
     forDays: "pour {days} jours", currentPlan: "Forfait actuel", freeAvailable: "Forfait gratuit disponible",
     upgrade: "Passer au niveau supérieur", renewNow: "Renouveler ce forfait", redirecting: "Ouverture du paiement sécurisé…", selectStore: "Sélectionnez une boutique avant d'acheter ce forfait.",
     checkoutFailed: "Impossible de démarrer le paiement.",
@@ -2358,7 +2358,7 @@ const ar: Dict = {
   subscription: {
     title: "الباقات والفوترة", subtitle: "اختر الباقة المناسبة لنشاطك وقم بالترقية بأمان.",
     loading: "جارٍ تحميل الباقات", current: "الاشتراك الحالي", active: "نشط",
-    activeUntil: "الوصول نشط حتى {date}.", recommended: "موصى بها", forever: "مجاني دائمًا",
+    activeUntil: "الوصول نشط حتى {date}.", recommended: "موصى بها", forever: "مجاني دائمًا", freeForDays: "مجاني لمدة {days} يومًا", usageStores: "المتاجر", usageTeam: "أعضاء الفريق", usageProducts: "المنتجات", usageEmails: "رسائل التسويق",
     forDays: "لمدة {days} يومًا", currentPlan: "الباقة الحالية", freeAvailable: "الباقة المجانية متاحة",
     upgrade: "الترقية بأمان", renewNow: "تجديد هذه الباقة", redirecting: "جارٍ فتح الدفع الآمن…", selectStore: "اختر متجرًا قبل شراء هذه الباقة.",
     checkoutFailed: "تعذر بدء الدفع.",

@@ -144,6 +144,7 @@ export interface SubscriptionPlan {
   duration_days: number;
   entitlement_scope: "all_owned_stores" | "one_store";
   features: string[];
+  entitlements?: Record<string, boolean | number | string>;
   benefits?: Array<{
     key: string; name: string; description: string; value: boolean | number | string; unit: string; display: string;
     scope?: "account" | "store" | "user"; counting_rules?: string; reset_window?: string;

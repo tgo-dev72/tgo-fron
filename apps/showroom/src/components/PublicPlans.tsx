@@ -8,6 +8,23 @@ import { useLocale } from "../i18n";
 import { loadPlanCatalog, readPlanCatalogCache } from "../lib/planCatalog";
 import { activePlanSubscriptions, formatPlanPrice, hasUsedFreePlan, localizedPlanCopy, planBenefits, recommendedPlanId } from "../lib/plans";
 
+const officialEntitlements = [
+  "stores.max_count", "designs.premium", "team.max_members", "catalog.max_products",
+  "domains.custom", "branding.remove_platform", "invoicing.issue", "analytics.level",
+  "marketing.email_monthly_sends", "catalog.import",
+] as const;
+
+function entitlementDisplay(value: boolean | number | string | undefined, locale: "en" | "fr" | "ar") {
+  if (typeof value === "boolean") return value ? "✓" : "—";
+  if (typeof value === "number") return value.toLocaleString(locale === "ar" ? "ar-MA" : locale);
+  const levels: Record<string, Record<string, string>> = {
+    essential: { en: "Essential", fr: "Essentiel", ar: "أساسي" },
+    standard: { en: "Standard", fr: "Standard", ar: "قياسي" },
+    advanced: { en: "Advanced", fr: "Avancé", ar: "متقدم" },
+  };
+  return value ? levels[value]?.[locale] ?? value : "—";
+}
+
 export function PublicPlans() {
   const { t, locale } = useLocale();
   const { user } = useAuth();
@@ -117,7 +134,7 @@ export function PublicPlans() {
                   <p>{copy.description || t("planDetail.coreIncluded")}</p>
                   <div className="sr-plan-price">
                     <strong>{plan.is_free ? t("membership.free") : formatPlanPrice(plan.price, plan.currency, locale)}</strong>
-                    {!plan.is_free && <span>/ {plan.duration_days} {t("membership.days")}</span>}
+                    <span>{plan.is_free ? t("plans.freePeriod") : `/ ${plan.duration_days} ${t("membership.days")}`}</span>
                   </div>
                   <div className="sr-plan-highlights-heading">
                     <span>{t("plans.highlights")}</span>
@@ -139,7 +156,29 @@ export function PublicPlans() {
         )}
 
         {!loading && plans.length > 0 && (
-          <p className="sr-plans-note">{t("plans.note")}</p>
+          <>
+            <p className="sr-plans-note">{t("plans.note")}</p>
+            <ScrollReveal as="section" className="sr-plan-comparison" aria-labelledby="plans-comparison-title">
+              <div className="sr-section-header">
+                <span className="sr-membership-kicker">{t("plans.compareKicker")}</span>
+                <h2 id="plans-comparison-title">{t("plans.compareTitle")}</h2>
+              </div>
+              <div className="sr-plan-table-scroll">
+                <table>
+                  <thead><tr><th>{t("plans.feature")}</th>{plans.map((plan) => <th key={plan.id}>{localizedPlanCopy(plan, locale).name}</th>)}</tr></thead>
+                  <tbody>{officialEntitlements.map((key) => <tr key={key}>
+                    <th>{t(`plans.entitlement.${key}`)}</th>
+                    {plans.map((plan) => <td key={plan.id}>{entitlementDisplay(plan.entitlements?.[key], locale)}</td>)}
+                  </tr>)}</tbody>
+                </table>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal as="section" className="sr-plan-education">
+              <span className="sr-membership-kicker">{t("plans.educationKicker")}</span>
+              <h2>{t("plans.educationTitle")}</h2>
+              <p>{t("plans.educationBody")}</p>
+            </ScrollReveal>
+          </>
         )}
       </div>
     </section>
