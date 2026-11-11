@@ -900,6 +900,11 @@ body.rich-text-open { overflow: hidden; }
 .theme-language-tabs > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; border-radius: 9px; background: var(--surface-2); }
 .theme-language-tabs button { min-height: 31px; border: 0; border-radius: 7px; background: transparent; color: var(--ink-muted); font-size: 11px; font-weight: 750; cursor: pointer; }
 .theme-language-tabs button.is-active { background: var(--surface); color: var(--brand); box-shadow: 0 1px 4px rgb(15 27 45 / 8%); }
+.section-language-tabs > div { gap: 7px; padding: 5px; border: 1px solid var(--line); }
+.section-language-tabs button { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border: 1px solid transparent; font-size: 12px; transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease; }
+.section-language-tabs button small { font-size: 9px; font-weight: 800; opacity: .65; }
+.section-language-tabs button.is-active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, var(--surface)); color: var(--brand); box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 22%, transparent), 0 2px 7px rgb(15 27 45 / 10%); }
+.section-language-tabs button.is-active::after { position: absolute; inset-inline: 18%; bottom: -6px; height: 3px; border-radius: 3px; background: var(--brand); content: ""; }
 .theme-textarea { min-height: 88px; resize: vertical; }
 .theme-upload-preview { display: block; width: 100%; aspect-ratio: 16 / 8; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 9px; object-fit: cover; }
 .theme-upload-preview.is-uploading { opacity: .58; }

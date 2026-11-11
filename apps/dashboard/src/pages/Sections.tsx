@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FiEdit2, FiLayers, FiPlus, FiSave, FiTrash2, FiX } from "react-icons/fi";
+import { FiCheck, FiEdit2, FiLayers, FiPlus, FiSave, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import { FaBoxOpen, FaGem, FaHeart, FaLeaf, FaShoePrints, FaTshirt } from "react-icons/fa";
 import { FaBagShopping } from "react-icons/fa6";
 import type { IconType } from "react-icons";
@@ -131,6 +131,8 @@ export function SectionsPage() {
   const [deleteTarget, setDeleteTarget] = useState<CatalogSection | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [importing, setImporting] = useState(false);
+  const importInput = useRef<HTMLInputElement>(null);
 
   const { data: sections, loading, error, reload } = useAsync<CatalogSection[]>(
     () => (store ? api.listSections(store.id) : Promise.resolve([])),
@@ -238,6 +240,21 @@ export function SectionsPage() {
     }
   }
 
+  async function importSections(file: File) {
+    if (!store) return;
+    setImporting(true);
+    try {
+      const result = await api.importSections(store.id, file);
+      toast.push("success", t(locale, "sections.importComplete", result));
+      reload();
+    } catch (error) {
+      toast.push("error", friendlyError(error, locale, "sections.importFailed"));
+    } finally {
+      setImporting(false);
+      if (importInput.current) importInput.current.value = "";
+    }
+  }
+
   function patchAttr(i: number, patch: Partial<AttrDraft>) {
     setDraft((d) => ({ ...d, attrs: d.attrs.map((a, idx) => (idx === i ? { ...a, ...patch } : a)) }));
   }
@@ -254,6 +271,16 @@ export function SectionsPage() {
           <p className="d-subtitle">{t(locale, "sections.subtitle")}</p>
         </div>
         <div className="page-head-actions">
+          <button className="btn btn-secondary" onClick={() => importInput.current?.click()} disabled={importing || saving || deleting}>
+            {importing ? <span className="spin" /> : <FiUpload />} {importing ? t(locale, "sections.importing") : t(locale, "sections.importFile")}
+          </button>
+          <input
+            ref={importInput}
+            hidden
+            type="file"
+            accept=".xlsx,.csv,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,application/json"
+            onChange={(event) => { const file = event.target.files?.[0]; if (file) void importSections(file); }}
+          />
           <button className="btn btn-primary" onClick={beginCreate} disabled={saving || deleting}>
             <FiPlus /> {t(locale, "sections.newSection")}
           </button>
@@ -270,7 +297,10 @@ export function SectionsPage() {
             <div className="editor-row" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               <div className="field">
                 <label className="field-label">{t(locale, "sections.nameLabel")}</label>
-                <div className="theme-language-tabs"><div>{(["en", "fr", "ar"] as const).map((language) => <button key={language} type="button" className={nameLanguage === language ? "is-active" : ""} onClick={() => setNameLanguage(language)}>{language.toUpperCase()}</button>)}</div></div>
+                <div className="theme-language-tabs section-language-tabs"><div>{(["en", "fr", "ar"] as const).map((language) => {
+                  const active = nameLanguage === language;
+                  return <button key={language} type="button" className={active ? "is-active" : ""} aria-pressed={active} onClick={() => setNameLanguage(language)}>{active && <FiCheck aria-hidden="true" />}<span>{t(locale, `sections.language_${language}`)}</span><small>{language.toUpperCase()}</small></button>;
+                })}</div></div>
                 <input
                   className="input"
                   dir={nameLanguage === "ar" ? "rtl" : "ltr"}

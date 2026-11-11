@@ -1329,6 +1329,14 @@ export const api = {
   createSection(storeId: number, data: Record<string, unknown>) {
     return request<CatalogSection>(`/api/catalog/store/${storeId}/sections/`, json("POST", data));
   },
+  importSections(storeId: number, file: File) {
+    const form = new FormData();
+    form.append("file", file);
+    return uploadRequest<{ created: number; updated: number; total: number }>(
+      `/api/catalog/store/${storeId}/sections/import/`,
+      form,
+    );
+  },
   updateSection(storeId: number, sectionId: number, data: Record<string, unknown>) {
     return request<CatalogSection>(`/api/catalog/store/${storeId}/sections/${sectionId}/`, json("PATCH", data));
   },
