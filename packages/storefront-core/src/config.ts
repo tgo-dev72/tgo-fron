@@ -138,6 +138,7 @@ export interface StorefrontAppearance {
     header_text: string;
     navigation: string;
     navigation_text: string;
+    menu_dropdown?: string;
     announcement: string;
     hero: string;
     section: string;

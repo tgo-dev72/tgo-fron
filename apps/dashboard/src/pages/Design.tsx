@@ -19,7 +19,7 @@ const DEFAULT_APPEARANCE: StorefrontAppearance = {
   typography: { body_font: "system", heading_font: "system", base_size: "medium", heading_scale: "medium" },
   header: { layout: "logo_center", sticky: "always", width: "contained", logo_size: "standard", nav_alignment: "center", show_search: true, show_account: true, show_language: true, show_cart: true, show_categories: false, show_about: true, show_contact: true },
   style: { button_shape: "rounded", card_shape: "rounded", card_padding: "comfortable", card_alignment: "center", card_hover: "shadow", content_width: "standard" },
-  colors: { theme_primary: "", theme_secondary: "", theme_muted: "", page: "", header: "", header_text: "", navigation: "", navigation_text: "", announcement: "", hero: "", section: "", card: "", discount_badge: "", discount_badge_text: "", newsletter: "", footer: "" },
+  colors: { theme_primary: "", theme_secondary: "", theme_muted: "", page: "", header: "", header_text: "", navigation: "", navigation_text: "", menu_dropdown: "", announcement: "", hero: "", section: "", card: "", discount_badge: "", discount_badge_text: "", newsletter: "", footer: "" },
   footer: { show_contact: true, show_social_links: true, copyright: { en: "", fr: "", ar: "" } },
 };
 
@@ -540,6 +540,7 @@ export function DesignPage() {
                   ["header_text", headerCopy.headerText, "#17211B"],
                   ["navigation", locale === "ar" ? "خلفية روابط التنقل" : locale === "fr" ? "Arrière-plan de navigation" : "Navigation background", "#FFFFFF"],
                   ["navigation_text", locale === "ar" ? "نص روابط التنقل" : locale === "fr" ? "Texte de navigation" : "Navigation text", "#17211B"],
+                  ["menu_dropdown", locale === "ar" ? "خلفية قائمة المجموعات" : locale === "fr" ? "Arrière-plan du menu Collections" : "Collections menu background", "#FFFFFF"],
                   ["announcement", appearanceCopy.announcementBackground, "#1F2937"],
                   ["hero", appearanceCopy.heroBackground, "#E5E7EB"],
                   ["section", appearanceCopy.sectionBackground, "#F8FAFC"],

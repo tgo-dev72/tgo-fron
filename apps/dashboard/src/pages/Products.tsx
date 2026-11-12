@@ -30,6 +30,21 @@ type ExternalImportPolicy = {
 
 type SectionResolution = { keys: string[]; choices: Record<string, string> };
 
+async function jsonNeedsDefaultSection(file: File): Promise<boolean> {
+  try {
+    const payload = JSON.parse(await file.text()) as { schema?: unknown; products?: unknown };
+    if (payload.schema !== "tijarago.catalog") return true;
+    if (!Array.isArray(payload.products)) return false;
+    return payload.products.some((product) => (
+      !product || typeof product !== "object" || !("section" in product) ||
+      typeof (product as { section?: unknown }).section !== "string" ||
+      !(product as { section: string }).section.trim()
+    ));
+  } catch {
+    return false;
+  }
+}
+
 export function ProductsPage() {
   const { store } = useStore();
   const { user } = useAuth();
@@ -210,7 +225,7 @@ export function ProductsPage() {
     setTransferStatus({ operation: "import", phase: "validating" });
     try {
       let defaultSection = "";
-      if (file.name.toLocaleLowerCase().endsWith(".json")) {
+      if (file.name.toLocaleLowerCase().endsWith(".json") && await jsonNeedsDefaultSection(file)) {
         defaultSection = await requestJsonSection() ?? "";
         if (!defaultSection) { setTransferStatus(null); return; }
       }

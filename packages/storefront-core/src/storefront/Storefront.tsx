@@ -1260,6 +1260,8 @@ function CartConsumer({
               subtitle={activeCategoryBanner?.description || ""}
               cta=""
               mediaMode="banner"
+              showOverlay={activeCategoryBanner?.show_banner_overlay !== false}
+              showText={activeCategoryBanner?.show_banner_title !== false}
             >
               {activeCategoryImage
                 ? <OptimizedImage className="sf-configured-hero-image sf-category-banner-image" src={activeCategoryImage} widthHint={1600} widths={[640, 960, 1280, 1600, 2000]} sizes="100vw" alt={activeLabel} priority />
@@ -1409,7 +1411,7 @@ function CartConsumer({
       {!dedicatedAccount && !productPageActive && !configuredPageActive && !catalogPageActive && showProducts && <CollectionHighlights sections={sections} products={allProducts} locale={locale} onSelect={setActive} />}
 
       {dedicatedAccount || productPageActive || configuredPageActive ? null : showProducts || catalogPageActive ? (
-        <section className="sf-products" id="products">
+        <section className={`sf-products${catalogPageActive ? " is-catalog-page" : ""}`} id="products">
           <Container>
             {catalogPageActive && <nav className="sf-collection-breadcrumb" aria-label={t(locale, "nav.all")}><a href="/">{{ en: "Home", fr: "Accueil", ar: "الرئيسية" }[locale]}</a>{activeCategoryTrail.map((section, index) => <span key={section.id} className="sf-breadcrumb-step"><span aria-hidden="true">/</span>{index < activeCategoryTrail.length - 1 ? <a href={`/collections/${encodeURIComponent(section.key)}`}>{sectionLabel(locale, section.label)}</a> : <span aria-current="page">{sectionLabel(locale, section.label)}</span>}</span>)}{activeCategoryTrail.length === 0 && <span className="sf-breadcrumb-step"><span aria-hidden="true">/</span><span aria-current="page">{query.trim() ? `${t(locale, "catalog.search")}: ${query.trim()}` : t(locale, "catalog.shopAll")}</span></span>}</nav>}
             <div className="sf-products-head">

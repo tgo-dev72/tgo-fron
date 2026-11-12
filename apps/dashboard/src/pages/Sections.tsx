@@ -61,6 +61,8 @@ interface SectionDraft {
   sort_order: number;
   is_visible: boolean;
   thumbnail: string;
+  show_banner_overlay: boolean;
+  show_banner_title: boolean;
   attrs: AttrDraft[];
 }
 
@@ -107,7 +109,7 @@ function toDefs(attrs: AttrDraft[]): Partial<AttributeDef>[] {
 }
 
 const emptyNames = (): Record<"en" | "fr" | "ar", string> => ({ en: "", fr: "", ar: "" });
-const emptyDraft = (): SectionDraft => ({ id: null, label: "", label_translations: emptyNames(), key: "", icon: "FaTshirt:fa", sort_order: 0, is_visible: true, thumbnail: "", attrs: [] });
+const emptyDraft = (): SectionDraft => ({ id: null, label: "", label_translations: emptyNames(), key: "", icon: "FaTshirt:fa", sort_order: 0, is_visible: true, thumbnail: "", show_banner_overlay: true, show_banner_title: true, attrs: [] });
 const emptyAttr = (): AttrDraft => ({ key: "", label: "", type: "select", level: "variant", required: false, options: "" });
 
 function translatedName(section: Pick<CatalogSection, "label" | "label_translations">, locale: "en" | "fr" | "ar"): string {
@@ -148,7 +150,7 @@ export function SectionsPage() {
 
   function beginEdit(s: CatalogSection) {
     const names = { ...emptyNames(), ...(s.label_translations ?? {}), en: s.label_translations?.en || s.label };
-    setDraft({ id: s.id, label: names.en || s.label, label_translations: names, key: s.key, icon: s.icon, sort_order: s.sort_order, is_visible: s.is_visible ?? true, thumbnail: s.thumbnail ?? "", attrs: toAttrs(s.attribute_defs ?? []) });
+    setDraft({ id: s.id, label: names.en || s.label, label_translations: names, key: s.key, icon: s.icon, sort_order: s.sort_order, is_visible: s.is_visible ?? true, thumbnail: s.thumbnail ?? "", show_banner_overlay: s.show_banner_overlay !== false, show_banner_title: s.show_banner_title !== false, attrs: toAttrs(s.attribute_defs ?? []) });
     setNameLanguage(locale);
     setOpen(true);
   }
@@ -172,7 +174,7 @@ export function SectionsPage() {
       return;
     }
     const key = draft.key || slugify(availableName);
-    const payload = { label: availableName, label_translations: draft.label_translations, key, icon: draft.icon, sort_order: draft.sort_order, is_visible: draft.is_visible, attribute_defs: toDefs(draft.attrs) };
+    const payload = { label: availableName, label_translations: draft.label_translations, key, icon: draft.icon, sort_order: draft.sort_order, is_visible: draft.is_visible, show_banner_overlay: draft.show_banner_overlay, show_banner_title: draft.show_banner_title, attribute_defs: toDefs(draft.attrs) };
     setSaving(true);
     try {
       if (draft.id) {
@@ -270,7 +272,7 @@ export function SectionsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `sections-import-template.${format}`;
+      link.download = `collections-import-template.${format}`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -354,13 +356,17 @@ export function SectionsPage() {
             </div>
 
             {draft.id && <div className="field section-banner-field">
-              <label className="field-label" htmlFor="section-banner-upload">{locale === "ar" ? "بانر صفحة الفئة" : locale === "fr" ? "Bannière de la catégorie" : "Category page banner"}</label>
+              <label className="field-label" htmlFor="section-banner-upload">{locale === "ar" ? "بانر صفحة المجموعة" : locale === "fr" ? "Bannière de la collection" : "Collection page banner"}</label>
               {draft.thumbnail && <img className="section-banner-preview" src={api.assetUrl(draft.thumbnail)} alt="" />}
               <label className={`btn btn-secondary${uploadingBanner ? " is-disabled" : ""}`} htmlFor="section-banner-upload">
                 {uploadingBanner ? `${bannerProgress}%` : locale === "ar" ? "رفع صورة البانر" : locale === "fr" ? "Importer la bannière" : "Upload banner image"}
               </label>
               <input id="section-banner-upload" type="file" accept="image/png,image/jpeg,image/webp" hidden disabled={uploadingBanner} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadCategoryBanner(file); event.currentTarget.value = ""; }} />
-              <span className="field-hint">{locale === "ar" ? "تظهر هذه الصورة أعلى صفحة الفئة على الهاتف وسطح المكتب." : locale === "fr" ? "Cette image apparaît en haut de la page catégorie sur mobile et ordinateur." : "Shown at the top of this category page on mobile and desktop."}</span>
+              <span className="field-hint">{locale === "ar" ? "تظهر هذه الصورة أعلى صفحة المجموعة على الهاتف وسطح المكتب." : locale === "fr" ? "Cette image apparaît en haut de la page collection sur mobile et ordinateur." : "Shown at the top of this collection page on mobile and desktop."}</span>
+              <div className="appearance-toggle-grid section-banner-controls">
+                <label className="appearance-toggle"><input type="checkbox" checked={draft.show_banner_overlay} onChange={(event) => setDraft((current) => ({ ...current, show_banner_overlay: event.target.checked }))} /><span>{t(locale, "sections.bannerOverlay")}</span></label>
+                <label className="appearance-toggle"><input type="checkbox" checked={draft.show_banner_title} onChange={(event) => setDraft((current) => ({ ...current, show_banner_title: event.target.checked }))} /><span>{t(locale, "sections.bannerTitle")}</span></label>
+              </div>
             </div>}
 
             <div className="editor-row" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>

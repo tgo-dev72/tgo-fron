@@ -329,7 +329,7 @@ export interface StorefrontAppearance {
   };
   colors: {
     theme_primary: string; theme_secondary: string; theme_muted: string;
-    page: string; header: string; header_text: string; navigation: string; navigation_text: string; announcement: string; hero: string;
+    page: string; header: string; header_text: string; navigation: string; navigation_text: string; menu_dropdown: string; announcement: string; hero: string;
     section: string; card: string; discount_badge: string; discount_badge_text: string; newsletter: string; footer: string;
   };
   footer: {
@@ -612,6 +612,8 @@ export interface CatalogSection {
   key: string;
   label: string;
   label_translations?: Partial<Record<"en" | "fr" | "ar", string>>;
+  show_banner_overlay?: boolean;
+  show_banner_title?: boolean;
   description?: string;
   thumbnail?: string;
   is_visible?: boolean;

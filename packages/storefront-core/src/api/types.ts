@@ -33,6 +33,8 @@ export interface CatalogSection {
   label_translations?: Partial<Record<"en" | "fr" | "ar", string>>;
   description?: string;
   thumbnail?: string;
+  show_banner_overlay?: boolean;
+  show_banner_title?: boolean;
   is_visible?: boolean;
   parent?: number | null;
   sort_mode?: "manual" | "newest" | "price_asc" | "price_desc" | "name_asc";

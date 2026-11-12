@@ -623,6 +623,7 @@ html:has(.sf-root[data-design="nexa"]) { --sf-scrollbar-document-thumb: #1264d8;
 .sf-products {
   padding-block: var(--ds-section);
 }
+.sf-products.is-catalog-page { padding-block: clamp(28px, 4vw, 52px); }
 .sf-products-head {
   display: flex;
   align-items: baseline;

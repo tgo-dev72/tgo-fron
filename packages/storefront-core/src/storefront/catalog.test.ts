@@ -114,7 +114,7 @@ test("global appearance settings become shared storefront design tokens", () => 
       typography: { body_font: "humanist", heading_font: "editorial", base_size: "large", heading_scale: "large" },
       header: { layout: "logo_center", sticky: "none", width: "full", logo_size: "large", nav_alignment: "start", show_search: true, show_account: false, show_language: true, show_cart: true },
       style: { button_shape: "pill", card_shape: "soft", card_padding: "compact", card_alignment: "start", card_hover: "lift", content_width: "wide" },
-      colors: { theme_primary: "#121212", theme_secondary: "#A67C32", theme_muted: "#E8D7AE", page: "#112233", header: "#F8FAFC", header_text: "#334455", navigation: "#223344", navigation_text: "#F8FAFC", announcement: "", hero: "#445566", section: "", card: "#FFFFFF", discount_badge: "#FDE68A", discount_badge_text: "#422006", newsletter: "", footer: "#101010" },
+      colors: { theme_primary: "#121212", theme_secondary: "#A67C32", theme_muted: "#E8D7AE", page: "#112233", header: "#F8FAFC", header_text: "#334455", navigation: "#223344", navigation_text: "#F8FAFC", menu_dropdown: "#EEDDCC", announcement: "", hero: "#445566", section: "", card: "#FFFFFF", discount_badge: "#FDE68A", discount_badge_text: "#422006", newsletter: "", footer: "#101010" },
       footer: { show_contact: true, show_social_links: false, copyright: { en: "Design Lab", fr: "", ar: "" } },
     },
   };
@@ -139,6 +139,8 @@ test("global appearance settings become shared storefront design tokens", () => 
   assert.equal(style["--sf-header-ink"], "#334455");
   assert.equal(style["--sf-bg-navigation"], "#223344");
   assert.equal(style["--sf-navigation-ink"], "#F8FAFC");
+  assert.equal(style["--sf-bg-menu_dropdown"], "#EEDDCC");
+  assert.equal(style["--sf-bg-menu_dropdown-ink"], "#161616");
   assert.equal(style["--sf-bg-discount_badge"], "#FDE68A");
   assert.equal(style["--sf-discount-badge-ink"], "#422006");
   assert.equal(style["--sf-bg-card"], "#FFFFFF");
