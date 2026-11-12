@@ -406,6 +406,9 @@ html:has(.sf-root[data-design="nexa"]) { --sf-scrollbar-document-thumb: #1264d8;
 .sf-nav[data-overlay="true"] ~ .sf-hero.is-banner {
   margin-top: var(--sf-nav-height, 0px);
 }
+@media (max-width: 1120px) {
+  .sf-nav[data-overlay="true"] ~ .sf-hero.is-banner { margin-top: 0; }
+}
 .sf-hero.is-banner {
   position: relative;
   isolation: isolate;

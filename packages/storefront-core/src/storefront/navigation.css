@@ -359,7 +359,6 @@
      Keep both elements in normal flow so an overlay compensation margin does
      not leave an empty band between the header and a configured banner. */
   .sf-nav[data-overlay="true"] { margin-bottom: 0; }
-  .sf-nav[data-overlay="true"] ~ .sf-hero.is-banner { margin-top: 0; }
   .sf-root[data-design="beauty"], .sf-root[data-design="fashion"], .sf-root[data-design="electronics"], .sf-root[data-design="nexa"] { --sf-nav-height: 64px; --sf-tabs-top: 64px; }
 }
 @media (max-width: 480px) {
