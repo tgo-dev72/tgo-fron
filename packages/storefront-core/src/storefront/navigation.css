@@ -355,7 +355,11 @@
   .sf-nav .sf-header-actions .sf-search-trigger > span { display: none; }
   .sf-nav .sf-cart-count { top: -2px; inset-inline-start: 22px; inset-inline-end: auto; }
   .sf-nav[data-composition="search-first"] .sf-header-search-main { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; margin-block: 2px 4px; }
-  .sf-nav[data-overlay="true"] { margin-bottom: -64px; }
+  /* Mobile headers use an opaque, compact row rather than overlaying the hero.
+     Keep both elements in normal flow so an overlay compensation margin does
+     not leave an empty band between the header and a configured banner. */
+  .sf-nav[data-overlay="true"] { margin-bottom: 0; }
+  .sf-nav[data-overlay="true"] ~ .sf-hero.is-banner { margin-top: 0; }
   .sf-root[data-design="beauty"], .sf-root[data-design="fashion"], .sf-root[data-design="electronics"], .sf-root[data-design="nexa"] { --sf-nav-height: 64px; --sf-tabs-top: 64px; }
 }
 @media (max-width: 480px) {
