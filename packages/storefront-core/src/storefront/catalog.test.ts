@@ -9,6 +9,7 @@ import { optimizedImageSrcSet, optimizedImageUrl, resolveImageUrl } from "../med
 import { contactFromOrder, createCheckoutService, mapOrder } from "../checkout/service";
 import { checkoutFailureMessage } from "../checkout/errors";
 import { ApiError } from "../api/client";
+import { metaConsent, metaEvent } from "../api/meta";
 import { formatPrice, localeTag } from "../i18n";
 import { applyCatalogFacets, buildCatalogFacets, filterAndSortProducts, isCatalogPath, productAttributeValues, productFacts, selectHomepageProducts, selectRelatedProducts } from "./catalog";
 
@@ -19,6 +20,32 @@ test("catalog system routes keep the full filter experience", () => {
   assert.equal(isCatalogPath("/collections/shoes"), true);
   assert.equal(isCatalogPath("/products/leather-sandal"), false);
   assert.equal(isCatalogPath("/about"), false);
+});
+
+test("Meta standard events include commerce parameters and COD stays OrderPlaced", () => {
+  assert.equal(metaEvent({ eventType: "page_view" })?.name, "PageView");
+  assert.equal(metaEvent({ eventType: "product_view", productId: 42 })?.name, "ViewContent");
+  assert.deepEqual(metaEvent({ eventType: "add_to_cart", productId: 42, properties: { currency: "mad", cart_value: 80, quantity: 2 } }), {
+    name: "AddToCart", params: { currency: "MAD", value: 80, content_type: "product", content_ids: ["42"], num_items: 2 },
+  });
+  assert.equal(metaEvent({ eventType: "order_submitted", orderId: "order-1", properties: { payment_mode: "cod" } })?.name, "OrderPlaced");
+  assert.equal(metaEvent({ eventType: "checkout_started", properties: { cart_value: 80 } })?.name, "InitiateCheckout");
+  assert.equal(metaEvent({ eventType: "order_submitted", orderId: "order-2", properties: { payment_mode: "online_paid" } })?.name, "Purchase");
+  assert.equal(metaEvent({ eventType: "search" }), null);
+});
+
+test("Meta consent is store-scoped and defaults to undecided", () => {
+  const values = new Map<string, string>();
+  const previous = globalThis.window;
+  Object.defineProperty(globalThis, "window", { configurable: true, value: { localStorage: { getItem: (key: string) => values.get(key) ?? null } } });
+  const first = { storeName: "One", slug: "one", domain: "https://one.example", contactEmail: "", currency: "MAD" };
+  const second = { storeName: "Two", slug: "two", domain: "https://two.example", contactEmail: "", currency: "MAD" };
+  assert.equal(metaConsent(first), "undecided");
+  values.set("sf-meta-consent:one", "declined");
+  values.set("sf-meta-consent:two", "granted");
+  assert.equal(metaConsent(first), "declined");
+  assert.equal(metaConsent(second), "granted");
+  Object.defineProperty(globalThis, "window", { configurable: true, value: previous });
 });
 import { storefrontAppearanceStyle } from "./Storefront";
 import { buildStoreMenu } from "./navigation";
@@ -606,7 +633,7 @@ test("order creation sends coupon, nullable variant, and the idempotency header"
       contact: { firstName: "A", lastName: "B", email: "a@example.com", phone: "+212600000000", city: "Rabat", address: "1 Main Street" },
       marketingConsent: true,
       method: "cod",
-      lines: [{ id: 41, productId: 41, variantId: null, name: "Atlas Saffron", variant: "", qty: 1, unitPrice: 100 }],
+      lines: [{ id: 41, productId: 41, productRef: "ATLAS-41", variantId: null, name: "Atlas Saffron", variant: "", qty: 1, unitPrice: 100 }],
       totals: { subtotal: 100, discount: 0, shipping: 0, total: 100 },
       currency: "MAD",
       locale: "en",

@@ -182,6 +182,8 @@ export interface StoreConfig {
   publicDomains?: Array<{ hostname: string; primary: boolean }>;
   /** Tenant slug (used to scope client-side state such as auth sessions). */
   slug?: string;
+  /** Public Meta browser configuration. Server credentials are never included. */
+  meta?: { enabled: boolean; pixelId: string };
   /** Business-family key supplied by the runtime storefront config. */
   design?: string;
   /** Public support email (footer + mailto links). */

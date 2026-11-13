@@ -8,6 +8,7 @@ import "react-phone-number-input/style.css";
 import { shippingCharge } from "../config";
 import { ApiError } from "../api/client";
 import { trackStorefrontEvent } from "../api/analytics";
+import { metaConsent, metaTrackingId } from "../api/meta";
 import { IconCard, IconCheck, IconClose, IconPackage, IconShield, type CartItem } from "../storefront/components";
 import type { Locale } from "../i18n";
 import { dir, formatPrice, t, useLocale } from "../i18n";
@@ -195,6 +196,7 @@ export function CheckoutFlow({
         return {
           id: it.product.id,
           productId: it.product.id,
+          productRef: it.product.ref,
           variantId: it.variantId,
           name: it.product.name,
           variant,
@@ -254,6 +256,13 @@ export function CheckoutFlow({
           setPendingOrderId(null);
           setProcessing(null);
           setOrder(freshOrder);
+          trackStorefrontEvent({
+            eventId: oid,
+            eventType: "order_submitted",
+            orderId: oid,
+            contentIds: freshOrder.lines.map((line) => line.productRef),
+            properties: { cart_value: freshOrder.totals.total, currency: freshOrder.currency, quantity: freshOrder.lines.reduce((sum, line) => sum + line.qty, 0), payment_mode: "online_paid" },
+          });
           onOrderComplete();
           return;
         }
@@ -341,6 +350,8 @@ export function CheckoutFlow({
       const input: PlaceOrderInput = {
         contact,
         marketingConsent,
+        marketingTrackingConsent: metaConsent(config) === "granted",
+        marketingTrackingId: metaTrackingId(config),
         method: m,
         lines,
         totals: { subtotal, discount, shipping, total },
@@ -361,7 +372,8 @@ export function CheckoutFlow({
       trackStorefrontEvent({
         eventType: "order_submitted",
         orderId: result.order.reference,
-        properties: { cart_value: result.order.totals.total, currency: result.order.currency, quantity: lines.reduce((sum, line) => sum + line.qty, 0) },
+        contentIds: lines.map((line) => line.productRef),
+        properties: { cart_value: result.order.totals.total, currency: result.order.currency, quantity: lines.reduce((sum, line) => sum + line.qty, 0), payment_mode: m === "cod" ? "cod" : "online_pending" },
       });
       if (result.paymentUnavailable) {
         setPendingOrderId(result.order.reference);

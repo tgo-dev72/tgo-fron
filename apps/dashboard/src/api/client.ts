@@ -88,6 +88,12 @@ export interface Store {
   created_at: string;
 }
 
+export interface MetaIntegration {
+  enabled: boolean; pixel_id: string; token_configured: boolean;
+  status: "connected" | "configured" | "disconnected";
+  last_tested_at: string | null; last_test_succeeded: boolean; last_error_code: string;
+}
+
 export interface StorefrontDeployment {
   id: number;
   store: number;
@@ -1009,6 +1015,10 @@ export interface ProductReview {
 }
 
 export const api = {
+  getMetaIntegration(storeId: number) { return request<MetaIntegration>(`/api/store/${storeId}/integrations/meta/`); },
+  updateMetaIntegration(storeId: number, body: { enabled: boolean; pixel_id: string; access_token?: string }) { return request<MetaIntegration>(`/api/store/${storeId}/integrations/meta/`, json("PATCH", body)); },
+  disconnectMetaIntegration(storeId: number) { return request<MetaIntegration>(`/api/store/${storeId}/integrations/meta/`, { method: "DELETE" }); },
+  testMetaIntegration(storeId: number, test_event_code: string) { return request<MetaIntegration>(`/api/store/${storeId}/integrations/meta/test/`, json("POST", { test_event_code })); },
   listProductReviews(storeId: number) {
     return request<ProductReview[]>(`/api/catalog/store/${storeId}/reviews/`);
   },

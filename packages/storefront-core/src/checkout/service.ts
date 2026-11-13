@@ -108,6 +108,7 @@ export function mapOrder(raw: OrderResponse, input?: PlaceOrderInput): CheckoutO
     lines: raw.items.map((it): CheckoutLine => ({
       id: it.product_id,
       productId: it.product_id,
+      productRef: it.ref,
       variantId: it.variant_id,
       name: it.name,
       variant: variantSummary(it.attributes),
@@ -141,6 +142,8 @@ function orderPayload(input: PlaceOrderInput) {
     } : undefined,
     payment_mode: input.method === "cod" ? "cod" : "online",
     marketing_consent: input.marketingConsent,
+    marketing_tracking_consent: input.marketingTrackingConsent === true,
+    marketing_tracking_id: input.marketingTrackingConsent === true ? input.marketingTrackingId ?? "" : "",
     coupon_code: input.couponCode?.trim() ?? "",
     customer: {
       name: `${input.contact.firstName} ${input.contact.lastName}`.trim(),

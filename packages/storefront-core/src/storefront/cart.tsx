@@ -149,6 +149,7 @@ export function CartProvider({
     trackStorefrontEvent({
       eventType: "add_to_cart",
       productId: product.id,
+      contentIds: [product.ref],
       variantId: simpleProduct ? null : variant?.id ?? null,
       properties: { quantity: Math.min(requestedQty, maxQty), cart_value: unitPrice * Math.min(requestedQty, maxQty) },
     });
@@ -179,6 +180,7 @@ export function CartProvider({
       setCheckoutOpen(true);
       trackStorefrontEvent({
         eventType: "checkout_started",
+        contentIds: cart.map((item) => item.product.ref),
         properties: {
           quantity: cartCount,
           cart_value: cart.reduce((total, item) => total + item.unitPrice * item.qty, 0),

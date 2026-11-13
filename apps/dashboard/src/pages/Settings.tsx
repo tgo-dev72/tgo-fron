@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiCheck, FiDollarSign, FiFileText, FiSave, FiSettings, FiShoppingBag, FiLayout, FiUsers, FiTrash2, FiUserPlus, FiUpload, FiX, FiShield, FiMessageCircle } from "react-icons/fi";
+import { FiCheck, FiDollarSign, FiFileText, FiSave, FiSettings, FiShoppingBag, FiLayout, FiUsers, FiTrash2, FiUserPlus, FiUpload, FiX, FiShield, FiMessageCircle, FiTrendingUp } from "react-icons/fi";
 import { api, ApiError, type StoreMember, type StoreConfig, type StoreEmailForwarding } from "../api/client";
 import { useStore } from "../Layout";
 import { useAsync } from "../hooks/useAsync";
@@ -13,18 +13,19 @@ import { ModalShell, useLastPresent } from "../components/ModalShell";
 import { useAuth } from "../auth/AuthContext";
 import { CatalogSettings } from "../components/CatalogSettings";
 import { DomainSettings } from "../components/DomainSettings";
+import { MetaIntegrationSettings } from "../components/MetaIntegrationSettings";
 import { OptimizedImage } from "@storefront/core/media";
 import PhoneInput from "react-phone-number-input";
 import arPhoneLabels from "react-phone-number-input/locale/ar.json";
 import enPhoneLabels from "react-phone-number-input/locale/en.json";
 import frPhoneLabels from "react-phone-number-input/locale/fr.json";
 
-type Section = "general" | "contacts" | "catalog" | "invoicing" | "payment" | "storefront" | "team" | "danger";
+type Section = "general" | "contacts" | "catalog" | "invoicing" | "payment" | "storefront" | "marketing" | "team" | "danger";
 
 const SETTINGS_GROUPS = {
-  en: { profile: "Store profile", commerce: "Commerce", access: "People & access", advanced: "Advanced" },
-  fr: { profile: "Profil de la boutique", commerce: "Commerce", access: "Équipe et accès", advanced: "Avancé" },
-  ar: { profile: "ملف المتجر", commerce: "التجارة", access: "الفريق والصلاحيات", advanced: "متقدم" },
+  en: { profile: "Store profile", commerce: "Commerce", marketing: "Marketing integrations", access: "People & access", advanced: "Advanced" },
+  fr: { profile: "Profil de la boutique", commerce: "Commerce", marketing: "Intégrations marketing", access: "Équipe et accès", advanced: "Avancé" },
+  ar: { profile: "ملف المتجر", commerce: "التجارة", marketing: "تكاملات التسويق", access: "الفريق والصلاحيات", advanced: "متقدم" },
 } as const;
 
 const PAYMENT_COPY = {
@@ -313,7 +314,7 @@ export function SettingsPage() {
           <h1 className="d-title">{t(locale, "settings.title")}</h1>
           <p className="d-subtitle">{t(locale, "settings.subtitle", store?.name)}.</p>
         </div>
-        {section !== "team" && section !== "danger" && (
+        {section !== "team" && section !== "danger" && section !== "marketing" && (
           <div className="page-head-actions">
             <button className="btn btn-primary" onClick={save} disabled={saving}>
               {saving ? <span className="spin" /> : <FiSave />} {t(locale, "settings.saveChanges")}
@@ -331,6 +332,12 @@ export function SettingsPage() {
           </a>
           <a className={`settings-link${section === "contacts" ? " active" : ""}`} href="#contacts" onClick={(e) => { e.preventDefault(); setSection("contacts"); }}>
             <FiMessageCircle style={{ marginInlineEnd: 8, verticalAlign: -2 }} /> {t(locale, "settings.contactsSocial")}
+          </a>
+          </div>
+          <div className="settings-nav-group">
+          <div className="settings-nav-label">{settingsGroups.marketing}</div>
+          <a className={`settings-link${section === "marketing" ? " active" : ""}`} href="#marketing" onClick={(e) => { e.preventDefault(); setSection("marketing"); }}>
+            <FiTrendingUp style={{ marginInlineEnd: 8, verticalAlign: -2 }} /> Meta Pixel
           </a>
           </div>
           <div className="settings-nav-group">
@@ -697,6 +704,7 @@ export function SettingsPage() {
           )}
 
           {section === "team" && store && <TeamSection storeId={store.id} />}
+          {section === "marketing" && store && <MetaIntegrationSettings storeId={store.id} locale={locale} />}
 
           {section === "danger" && isOwner && store && (
             <div className="form-section">
@@ -710,7 +718,7 @@ export function SettingsPage() {
             </div>
           )}
 
-          {section !== "team" && section !== "danger" && (
+          {section !== "team" && section !== "danger" && section !== "marketing" && (
             <div className="form-actions">
               <button className="btn btn-primary" onClick={save} disabled={saving}>
                 {saving ? <span className="spin" /> : <FiSave />} {t(locale, "settings.saveChanges")}

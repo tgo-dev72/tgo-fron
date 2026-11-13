@@ -1,4 +1,5 @@
 import { API_BASE } from "./client";
+import { metaConsent, trackMeta } from "./meta";
 
 export type StorefrontEventType =
   | "page_view"
@@ -17,8 +18,11 @@ export type StorefrontEventType =
   | "password_reset_started";
 
 export interface StorefrontEventInput {
+  eventId?: string;
   eventType: StorefrontEventType;
   productId?: number;
+  /** Merchant catalog references used by Meta; never sent as arbitrary analytics properties. */
+  contentIds?: string[];
   variantId?: number | null;
   orderId?: string;
   properties?: Record<string, string | number>;
@@ -103,8 +107,10 @@ export function trackStorefrontEvent(input: StorefrontEventInput): void {
   const slug = storeSlug();
   const headers: Record<string, string> = { "Content-Type": "application/json", Accept: "application/json" };
   if (slug) headers["X-Store-Slug"] = slug;
+  const eventId = input.eventId ?? randomId("event");
+  trackMeta(input, eventId);
   const body = JSON.stringify({
-    event_id: randomId("event"),
+    event_id: eventId,
     event_type: input.eventType,
     visitor_id: visitorId(),
     session_id: sessionId(),
@@ -113,6 +119,7 @@ export function trackStorefrontEvent(input: StorefrontEventInput): void {
     order_id: input.orderId,
     occurred_at: new Date().toISOString(),
     properties: { ...sessionAttribution(), ...(input.properties ?? {}) },
+    marketing_tracking_consent: metaConsent() === "granted",
   });
   void fetch(`${API_BASE}/api/analytics/events/`, {
     method: "POST",

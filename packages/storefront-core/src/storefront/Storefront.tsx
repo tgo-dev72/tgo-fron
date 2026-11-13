@@ -6,6 +6,7 @@ import { Slideshow } from "./Slideshow";
 import type { StorefrontSlide } from "../config";
 import { api } from "../api/client";
 import { trackStorefrontEvent } from "../api/analytics";
+import { configureMeta, metaConsent, setMetaConfig, setMetaConsent } from "../api/meta";
 import type { CatalogSection, Product } from "../api/types";
 import { brandColor, themeFeatureSettings, type StoreConfig, type StorefrontHomepageSection } from "../config";
 import { LocaleProvider, dir, locales, sectionLabel, t } from "../i18n";
@@ -290,6 +291,7 @@ export function Storefront({
   /** Rendered in place of the catalog grid when `showProducts` is false (e.g. account). */
   page?: ReactNode;
 }) {
+  setMetaConfig(config);
   const [locale, setLocale] = useState<Locale>(initialLocale ?? (() => pickInitialLocale(config)));
   const [sections, setSections] = useState<CatalogSection[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -322,6 +324,14 @@ export function Storefront({
   const [selection, setSelection] = useState<Selection>({});
   const [hash, setHash] = useState<string>(() => (typeof window === "undefined" ? "" : window.location.hash));
   const [routePath, setRoutePath] = useState<string>(() => (typeof window === "undefined" ? "/" : window.location.pathname));
+  const [trackingConsent, setTrackingConsentState] = useState(() => metaConsent(config));
+
+  useEffect(() => {
+    configureMeta(config);
+    const onConsent = () => setTrackingConsentState(metaConsent(config));
+    window.addEventListener("tijarago:meta-consent", onConsent);
+    return () => window.removeEventListener("tijarago:meta-consent", onConsent);
+  }, [config]);
 
   useEffect(() => {
     const onHash = () => setHash(window.location.hash);
@@ -672,6 +682,11 @@ export function Storefront({
               storefrontHash={hash}
               storefrontPath={routePath}
             />
+            {config.meta?.enabled && trackingConsent === "undecided" && <section className="sf-meta-consent" role="dialog" aria-label={{ en: "Privacy choices", fr: "Choix de confidentialité", ar: "خيارات الخصوصية" }[locale]}>
+              <p>{{ en: "Allow this store to measure ads and shopping activity using Meta Pixel and Conversions API?", fr: "Autoriser cette boutique à mesurer les publicités et l’activité d’achat avec Meta Pixel et l’API Conversions ?", ar: "هل تسمح لهذا المتجر بقياس الإعلانات ونشاط التسوق باستخدام Meta Pixel وواجهة التحويلات؟" }[locale]}</p>
+              <div><button type="button" className="ds-btn ds-btn-ghost" onClick={() => setMetaConsent(config, "declined")}>{{ en: "Decline", fr: "Refuser", ar: "رفض" }[locale]}</button><button type="button" className="ds-btn ds-btn-primary" onClick={() => { setMetaConsent(config, "granted"); trackStorefrontEvent({ eventType: "page_view", properties: { path: `${routePath}${hash}` } }); }}>{{ en: "Allow", fr: "Autoriser", ar: "سماح" }[locale]}</button></div>
+            </section>}
+            {config.meta?.enabled && trackingConsent !== "undecided" && <button type="button" className="sf-meta-settings" onClick={() => { setMetaConsent(config, "declined"); setTrackingConsentState("undecided"); }}>{{ en: "Privacy choices", fr: "Confidentialité", ar: "خيارات الخصوصية" }[locale]}</button>}
           </CartProvider>
         </AuthProvider>
       </LocaleProvider>
@@ -1019,6 +1034,7 @@ function CartConsumer({
     trackStorefrontEvent({
       eventType: "product_view",
       productId: pdp.id,
+      contentIds: [pdp.ref],
       properties: { path: currentPath },
     });
   }, [currentPath, pdp]);

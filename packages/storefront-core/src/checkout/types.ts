@@ -23,6 +23,7 @@ export interface CheckoutLine {
   id: number;
   /** Product id sent to the API. */
   productId: number;
+  productRef: string;
   /** StockVariant id sent to the API (resolved from the cart; never null here). */
   variantId: number | null;
   name: string;
@@ -51,6 +52,8 @@ export interface PlaceOrderInput {
   reviewedTotals?: CheckoutQuote;
   contact: CheckoutContact;
   marketingConsent: boolean;
+  marketingTrackingConsent?: boolean;
+  marketingTrackingId?: string;
   method: PaymentMethod;
   lines: CheckoutLine[];
   totals: CheckoutTotals;
