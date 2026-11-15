@@ -23,6 +23,8 @@ export interface CartContextValue {
   toast: string | null;
   /** Add a product (with an optional variant selection). Shows a toast on success. */
   addToCart: (product: Product, selection?: Selection, quantity?: number) => void;
+  /** Ensure a product is present for direct checkout without incrementing an existing line. */
+  addToCartForCheckout: (product: Product, selection?: Selection, quantity?: number) => boolean;
   /** Set an item's quantity; 0 removes it. */
   setQty: (key: string, qty: number) => void;
   removeItem: (key: string) => void;
@@ -100,7 +102,7 @@ export function CartProvider({
     setToast(message);
   }
 
-  function addToCart(product: Product, selection: Selection = {}, quantity = 1) {
+  function commitCartItem(product: Product, selection: Selection = {}, quantity = 1, increment = true): boolean {
     const simpleProduct = product.uses_variants === false;
     const inventoryVariant = simpleProduct
       ? product.variants.find((candidate) => Object.keys(candidate.attributes ?? {}).length === 0) ?? product.variants[0]
@@ -110,7 +112,7 @@ export function CartProvider({
       variant = findVariant(product, selection);
       if (!variant) {
         showToast(t(locale, "product.variantUnavailable"));
-        return;
+        return false;
       }
     }
     const available = simpleProduct
@@ -118,7 +120,7 @@ export function CartProvider({
       : Number(variant?.available_quantity ?? 0);
     if (product.track_inventory !== false && available <= 0) {
       showToast(t(locale, "product.variantUnavailable"));
-      return;
+      return false;
     }
     const unitPrice = salePrice({
       price: variant?.effective_price ?? variant?.price ?? product.price,
@@ -131,7 +133,7 @@ export function CartProvider({
     setCart((prev) => {
       const existing = prev.find((it) => it.key === key);
       if (existing) {
-        return prev.map((it) => (it.key === key ? { ...it, qty: Math.min(it.qty + requestedQty, it.maxQty) } : it));
+        return prev.map((it) => (it.key === key ? { ...it, qty: Math.min(increment ? it.qty + requestedQty : Math.max(it.qty, requestedQty), it.maxQty) } : it));
       }
       return [
         ...prev,
@@ -154,6 +156,11 @@ export function CartProvider({
       properties: { quantity: Math.min(requestedQty, maxQty), cart_value: unitPrice * Math.min(requestedQty, maxQty) },
     });
     showToast(`${t(locale, "product.addToCart")} — ${product.name}`);
+    return true;
+  }
+
+  function addToCart(product: Product, selection: Selection = {}, quantity = 1) {
+    commitCartItem(product, selection, quantity, true);
   }
 
   function setQty(key: string, qty: number) {
@@ -171,6 +178,7 @@ export function CartProvider({
     checkoutOpen,
     toast,
     addToCart,
+    addToCartForCheckout: (product, selection, quantity) => commitCartItem(product, selection, quantity, false),
     setQty,
     removeItem: (key) => setQty(key, 0),
     openCart: () => setDrawerOpen(true),

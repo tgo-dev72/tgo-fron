@@ -52,6 +52,7 @@ export interface PlaceOrderInput {
   reviewedTotals?: CheckoutQuote;
   contact: CheckoutContact;
   marketingConsent: boolean;
+  policiesAccepted: boolean;
   marketingTrackingConsent?: boolean;
   marketingTrackingId?: string;
   method: PaymentMethod;

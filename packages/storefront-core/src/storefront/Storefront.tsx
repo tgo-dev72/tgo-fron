@@ -611,7 +611,7 @@ export function Storefront({
     ? pdp?.track_inventory === false ? Infinity : selectedPdpVariant.available_quantity
     : pdp ? maxAvailable(pdp) : 0;
   const pdpInStock = pdpMax > 0;
-  const pdpAddable = pdp ? Boolean(selectedPdpVariant) : false;
+  const pdpAddable = pdp ? Boolean(selectedPdpVariant) && pdpInStock : false;
 
   /* Designs without their own router get a built-in /account fallback so the
      header account button works on every template. Routed designs pass `page`
@@ -818,6 +818,7 @@ function CartConsumer({
     checkoutOpen,
     toast,
     addToCart,
+    addToCartForCheckout,
     setQty,
     removeItem,
     openCart,
@@ -833,13 +834,12 @@ function CartConsumer({
   const [pdpQuantity, setPdpQuantity] = useState(1);
   const [pdpAdding, setPdpAdding] = useState(false);
   const [buyNowPending, setBuyNowPending] = useState(false);
-  const [showStickyPurchaseBar, setShowStickyPurchaseBar] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState("");
   const [quickAddClosing, setQuickAddClosing] = useState(false);
   const [showRouteProgress, setShowRouteProgress] = useState(false);
   const [demoPromptOpen, setDemoPromptOpen] = useState(false);
   const pdpAddingRef = useRef(false);
-  const pdpPurchaseActionsRef = useRef<HTMLDivElement>(null);
-  const stickyPurchaseBarRef = useRef<HTMLDivElement>(null);
+  const pdpPickerRef = useRef<HTMLDivElement>(null);
   const quickAddModalRef = useRef<HTMLDivElement>(null);
   const quickAddOpenerRef = useRef<HTMLElement | null>(null);
   const requestCheckout = () => {
@@ -904,38 +904,6 @@ function CartConsumer({
   const configuredPageActive = Boolean(configuredPageEntry) && !catalogPageActive;
   const contactPageActive = configuredPageActive && (configuredPageKey === "contact" || /^contact(?:-us)?$/i.test(requestedRoute));
   const productPageActive = currentPath.startsWith("/products/") && Boolean(pdp);
-  useEffect(() => {
-    if (!productPageActive || !pdp) {
-      setShowStickyPurchaseBar(false);
-      return;
-    }
-    let frame = 0;
-    const update = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        const actions = pdpPurchaseActionsRef.current;
-        const bar = stickyPurchaseBarRef.current;
-        const nav = document.querySelector<HTMLElement>(".sf-nav");
-        if (!actions || !bar) return;
-        const headerBottom = Math.max(0, nav?.getBoundingClientRect().bottom ?? 0);
-        bar.style.setProperty("--sf-purchase-bar-top", `${Math.round(headerBottom)}px`);
-        setShowStickyPurchaseBar(actions.getBoundingClientRect().bottom <= headerBottom + 1);
-      });
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
-    const nav = document.querySelector<HTMLElement>(".sf-nav");
-    if (nav) resizeObserver?.observe(nav);
-    if (pdpPurchaseActionsRef.current) resizeObserver?.observe(pdpPurchaseActionsRef.current);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      resizeObserver?.disconnect();
-    };
-  }, [pdp?.id, productPageActive]);
   const quickAddOpen = Boolean(pdp) && !productPageActive;
   const requestQuickAddClose = () => {
     if (quickAddClosing) return;
@@ -1124,13 +1092,23 @@ function CartConsumer({
     }
     addToCart(product, initialSelection(product, sections));
   };
+  const focusRequiredOptions = () => {
+    setPurchaseMessage(t(locale, "product.chooseRequiredOptions"));
+    pdpPickerRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    pdpPickerRef.current?.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus({ preventScroll: true });
+  };
   const commitSelectedProduct = (checkout = false) => {
-    if (!pdp || !pdpAddable || pdpAddingRef.current) return;
+    if (!pdp || pdpAddingRef.current) return;
+    if (!selectedPdpVariant) { focusRequiredOptions(); return; }
+    if (!pdpInStock) { setPurchaseMessage(t(locale, "product.variantUnavailable")); return; }
     pdpAddingRef.current = true;
     setPdpAdding(true);
+    setPurchaseMessage("");
     try {
-      addToCart(pdp, selection, pdpQuantity);
-      if (checkout) setBuyNowPending(true);
+      const added = checkout
+        ? addToCartForCheckout(pdp, selection, pdpQuantity)
+        : (addToCart(pdp, selection, pdpQuantity), true);
+      if (checkout && added) setBuyNowPending(true);
     }
     finally { window.setTimeout(() => { pdpAddingRef.current = false; setPdpAdding(false); }, 350); }
   };
@@ -1174,6 +1152,7 @@ function CartConsumer({
           </span>
         </div>}
         {(pdp.variant_options?.length || pdpSection) && (
+          <div ref={pdpPickerRef} className={purchaseMessage ? "sf-pdp-picker-target is-error" : "sf-pdp-picker-target"}>
           <VariantPicker
             product={pdp}
             section={pdpSection}
@@ -1181,8 +1160,10 @@ function CartConsumer({
             onChange={setSelection}
             locale={locale}
           />
+          {purchaseMessage && <p className="sf-pdp-purchase-message" role="alert">{purchaseMessage}</p>}
+          </div>
         )}
-        <div className="sf-pdp-actions" ref={productPageActive ? pdpPurchaseActionsRef : undefined}>
+        <div className="sf-pdp-actions">
           {productSetting("show_quantity") && <span className="sf-pdp-actions-label">{t(locale, "product.quantity")}</span>}
           <div className="sf-pdp-controls">
             {productSetting("show_quantity") && <div className="sf-pdp-quantity" aria-label={t(locale, "product.quantity")}>
@@ -1231,18 +1212,15 @@ function CartConsumer({
     >
       {announcementContent && <div className="sf-announce">{announcementContent}</div>}
       <StoreNav cartCount={cartCount} onOpenCart={openCart} navLinks={resolvedNavLinks} sections={sections} products={allProducts} pathname={currentPath} hash={storefrontHash} searchQuery={query} />
-      {productPageActive && pdp && <div
-        ref={stickyPurchaseBarRef}
-        className={`sf-sticky-purchase-bar ${showStickyPurchaseBar ? "is-visible" : ""}`}
-        aria-hidden={!showStickyPurchaseBar}
-      >
+      {productPageActive && pdp && <div className="sf-sticky-purchase-bar">
         <Container>
           <div className="sf-sticky-purchase-product">
             {(selectedPdpVariant?.image?.image || pdp.images[0]?.image) && <OptimizedImage src={selectedPdpVariant?.image?.image || pdp.images[0].image} widthHint={96} widths={[64, 96, 128]} sizes="56px" alt="" />}
             <div><strong>{pdp.name}</strong><Price product={{ price: selectedPdpVariant?.effective_price ?? selectedPdpVariant?.price ?? pdp.price, promo: pdp.promo, compare_at_price: selectedPdpVariant?.effective_compare_at_price ?? pdp.compare_at_price }} locale={locale} /></div>
           </div>
-          <button type="button" className="ds-btn ds-btn-primary" tabIndex={showStickyPurchaseBar ? 0 : -1} disabled={!pdpAddable || pdpAdding} aria-busy={pdpAdding || undefined} onClick={addSelectedProduct}>{pdpAdding ? { en: "Adding…", fr: "Ajout…", ar: "جارٍ الإضافة…" }[locale] : t(locale, "product.addToCart")}</button>
+          <button type="button" className="ds-btn ds-btn-primary" disabled={!pdpInStock || pdpAdding} aria-busy={pdpAdding || undefined} onClick={buySelectedProduct}>{pdpAdding ? t(locale, "product.ordering") : t(locale, "product.orderNow")}</button>
         </Container>
+        {!pdpInStock && <p className="sf-sticky-purchase-status" role="status">{t(locale, "product.outOfStock")}</p>}
       </div>}
       {showRouteProgress && <div className="sf-route-progress" role="progressbar" aria-label={t(locale, "catalog.loading")}><span /></div>}
       {dedicatedAccount ? (

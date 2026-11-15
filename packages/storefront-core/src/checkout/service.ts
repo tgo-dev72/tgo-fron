@@ -142,6 +142,7 @@ function orderPayload(input: PlaceOrderInput) {
     } : undefined,
     payment_mode: input.method === "cod" ? "cod" : "online",
     marketing_consent: input.marketingConsent,
+    policies_accepted: input.policiesAccepted,
     marketing_tracking_consent: input.marketingTrackingConsent === true,
     marketing_tracking_id: input.marketingTrackingConsent === true ? input.marketingTrackingId ?? "" : "",
     coupon_code: input.couponCode?.trim() ?? "",

@@ -632,6 +632,7 @@ test("order creation sends coupon, nullable variant, and the idempotency header"
     await createCheckoutService().placeOrder({
       contact: { firstName: "A", lastName: "B", email: "a@example.com", phone: "+212600000000", city: "Rabat", address: "1 Main Street" },
       marketingConsent: true,
+      policiesAccepted: true,
       method: "cod",
       lines: [{ id: 41, productId: 41, productRef: "ATLAS-41", variantId: null, name: "Atlas Saffron", variant: "", qty: 1, unitPrice: 100 }],
       totals: { subtotal: 100, discount: 0, shipping: 0, total: 100 },
@@ -647,6 +648,7 @@ test("order creation sends coupon, nullable variant, and the idempotency header"
   assert.ok(captured);
   assert.equal(captured.headers.get("Idempotency-Key"), "checkout-key-1");
   assert.equal(captured.body.coupon_code, "SAVE10");
+  assert.equal(captured.body.policies_accepted, true);
   assert.deepEqual(captured.body.items, [{ product_id: 41, variant_id: null, quantity: 1 }]);
 });
 

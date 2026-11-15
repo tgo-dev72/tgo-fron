@@ -119,7 +119,6 @@ export function CheckoutFlow({
     address: "",
   });
   const [contactErrors, setContactErrors] = useState<ContactErrors>({});
-  const [locked, setLocked] = useState(false);
   const [policies, setPolicies] = useState(false);
   const [policiesError, setPoliciesError] = useState(false);
   const [marketingConsent, setMarketingConsent] = useState(false);
@@ -128,6 +127,7 @@ export function CheckoutFlow({
   const [checkoutError, setCheckoutError] = useState("");
   const [reviewedQuote, setReviewedQuote] = useState<{ fingerprint: string; quote: CheckoutQuote } | null>(null);
   const submittingRef = useRef(false);
+  const policyRef = useRef<HTMLLabelElement>(null);
 
   const [method, setMethod] = useState<PaymentMethod | undefined>(undefined);
   const [processing, setProcessing] = useState<PaymentMethod | "verify" | "quote" | null>(null);
@@ -155,7 +155,6 @@ export function CheckoutFlow({
     clearPendingOrder();
     setContact({ firstName: "", lastName: "", email: "", phone: "", city: "", address: "" });
     setContactErrors({});
-    setLocked(false);
     setPolicies(false);
     setPoliciesError(false);
     setMarketingConsent(false);
@@ -164,13 +163,16 @@ export function CheckoutFlow({
     setCouponError("");
     setCheckoutError("");
     idempotencyRef.current = null;
-    setMethod(undefined);
+    const methods: PaymentMethod[] = [];
+    if (config.payment?.cod ?? true) methods.push("cod");
+    if (config.payment?.online ?? true) methods.push("card");
+    setMethod(methods.length === 1 ? methods[0] : undefined);
     setProcessing(null);
     setOrder(null);
     setTracking(false);
     setFailed(null);
     setPendingOrderId(null);
-  }, [open]);
+  }, [open, config.payment?.cod, config.payment?.online]);
 
   // The customer account is the source of truth for details it already knows.
   // `user` can arrive just after checkout opens while the cookie session is
@@ -226,9 +228,8 @@ export function CheckoutFlow({
     const e: ContactErrors = {};
     const req = t(locale, "checkout.required");
     if (!c.firstName.trim()) e.firstName = req;
-    if (!c.lastName.trim()) e.lastName = req;
-    if (!c.email.trim()) e.email = req;
-    else if (!EMAIL_RE.test(c.email.trim())) e.email = t(locale, "checkout.emailInvalid");
+    if (method === "card" && !c.email.trim()) e.email = req;
+    else if (c.email.trim() && !EMAIL_RE.test(c.email.trim())) e.email = t(locale, "checkout.emailInvalid");
     if (!c.phone.trim()) e.phone = req;
     else if (!isValidPhoneNumber(c.phone)) e.phone = t(locale, "checkout.phoneInvalid");
     if (!c.city.trim()) e.city = req;
@@ -323,17 +324,20 @@ export function CheckoutFlow({
     void pollVerify(oid, snapshot);
   }
 
-  function saveContact() {
+  function validateCheckout(): boolean {
     const errors = validateContact(contact);
     setContactErrors(errors);
-    if (Object.keys(errors).length > 0) return;
+    if (Object.keys(errors).length > 0) {
+      window.setTimeout(() => document.querySelector<HTMLElement>(".sf-co-field.is-error")?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      return false;
+    }
     if (!policies) {
       setPoliciesError(true);
-      return;
+      window.setTimeout(() => policyRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      return false;
     }
     setPoliciesError(false);
-    setLocked(true);
-    setMethod(undefined);
+    return true;
   }
 
   async function placeOrder(m: PaymentMethod = method ?? "cod") {
@@ -347,9 +351,10 @@ export function CheckoutFlow({
       if (idempotencyRef.current?.fingerprint !== fingerprint) {
         idempotencyRef.current = { fingerprint, key: newIdempotencyKey() };
       }
-      const input: PlaceOrderInput = {
+      let input: PlaceOrderInput = {
         contact,
         marketingConsent,
+        policiesAccepted: policies,
         marketingTrackingConsent: metaConsent(config) === "granted",
         marketingTrackingId: metaTrackingId(config),
         method: m,
@@ -366,7 +371,11 @@ export function CheckoutFlow({
         // Contact, cart, payment method or coupon changed while the quote was in flight.
         if (currentFingerprint.current !== fingerprint) return;
         setReviewedQuote({ fingerprint, quote: freshQuote });
-        return;
+        input = {
+          ...input,
+          reviewedTotals: freshQuote,
+          totals: { subtotal: freshQuote.subtotal, discount: freshQuote.discount, shipping: freshQuote.shipping, tax: freshQuote.tax, total: freshQuote.total },
+        };
       }
       const result = await svc.placeOrder(input);
       trackStorefrontEvent({
@@ -518,17 +527,12 @@ export function CheckoutFlow({
           </div>
         ) : (
           <div className="sf-co-main">
-            <div className="sf-co-steps">
-              <StepChip n={1} done={locked} active={!locked} label={t(locale, "checkout.stepShipping")} />
-              <StepChip n={2} done={false} active={locked} label={t(locale, "checkout.stepPayment")} />
-            </div>
-
             <div className="sf-co-layout">
               <form
                 className="sf-co-card"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  saveContact();
+                  if (validateCheckout() && method) void placeOrder();
                 }}
               >
                 <div className="sf-co-card-head">
@@ -536,86 +540,49 @@ export function CheckoutFlow({
                     <div className="sf-co-step-tag">{t(locale, "checkout.stepShipping")}</div>
                     <h2 className="sf-co-card-title">{t(locale, "checkout.title")}</h2>
                   </div>
-                  {locked && (
-                    <button
-                      type="button"
-                      className="sf-co-link"
-                      onClick={() => {
-                        setLocked(false);
-                        setMethod(undefined);
-                      }}
-                    >
-                      {t(locale, "checkout.edit")}
-                    </button>
-                  )}
                 </div>
 
                 <div className="sf-co-grid">
                   <Field
-                    label={t(locale, "checkout.firstName")}
+                    label={t(locale, "checkout.name")}
                     error={contactErrors.firstName}
-                    readOnly={locked}
                     value={contact.firstName}
                     onChange={(v) => setContact((c) => ({ ...c, firstName: v }))}
+                    autoComplete="name"
                   />
-                  <Field
-                    label={t(locale, "checkout.lastName")}
-                    error={contactErrors.lastName}
-                    readOnly={locked}
-                    value={contact.lastName}
-                    onChange={(v) => setContact((c) => ({ ...c, lastName: v }))}
-                  />
-                  <Field
+                  {(method === "card" || Boolean(contact.email)) && <Field
                     label={t(locale, "checkout.email")}
                     type="email"
                     error={contactErrors.email}
-                    readOnly={locked}
                     value={contact.email}
                     onChange={(v) => setContact((c) => ({ ...c, email: v }))}
-                  />
+                    autoComplete="email"
+                  />}
                   <PhoneField
                     label={t(locale, "checkout.phone")}
                     error={contactErrors.phone}
-                    readOnly={locked}
                     value={contact.phone}
                     onChange={(v) => setContact((c) => ({ ...c, phone: v }))}
                   />
                   <Field
                     label={t(locale, "checkout.city")}
                     error={contactErrors.city}
-                    readOnly={locked}
                     select={(config.serviceableCities?.length ?? 0) > 0}
                     options={config.serviceableCities ?? []}
                     value={contact.city}
                     placeholder={t(locale, "checkout.selectCity")}
                     onChange={(v) => setContact((c) => ({ ...c, city: v }))}
+                    autoComplete="address-level2"
                   />
                   <Field
                     label={t(locale, "checkout.address")}
                     error={contactErrors.address}
-                    readOnly={locked}
                     value={contact.address}
                     onChange={(v) => setContact((c) => ({ ...c, address: v }))}
+                    autoComplete="street-address"
                   />
                 </div>
-
-                {!locked && (
-                  <label className={`sf-co-policy ${policies ? "is-checked" : ""} ${policiesError ? "is-error" : ""}`}>
-                    <input
-                      type="checkbox"
-                      checked={policies}
-                      onChange={(e) => {
-                        setPolicies(e.target.checked);
-                        setPoliciesError(false);
-                      }}
-                    />
-                    <span className="sf-co-policy-box">{policies && <IconCheck />}</span>
-                    <span>{t(locale, "checkout.policies")}</span>
-                  </label>
-                )}
-
-                {!locked && (
-                  <label className={`sf-co-policy ${marketingConsent ? "is-checked" : ""}`}>
+                  {(method === "card" || Boolean(contact.email)) && <label className={`sf-co-policy ${marketingConsent ? "is-checked" : ""}`}>
                     <input
                       type="checkbox"
                       checked={marketingConsent}
@@ -623,20 +590,7 @@ export function CheckoutFlow({
                     />
                     <span className="sf-co-policy-box">{marketingConsent && <IconCheck />}</span>
                     <span>{t(locale, "checkout.marketingConsent")}</span>
-                  </label>
-                )}
-
-                {!locked && (
-                  <button type="submit" className="ds-btn ds-btn-primary sf-co-save">
-                    {t(locale, "checkout.saveContinue")}
-                  </button>
-                )}
-                {locked && (
-                  <div className="sf-co-saved">
-                    <IconCheck />
-                    {t(locale, "checkout.contactSaved")}
-                  </div>
-                )}
+                  </label>}
               </form>
 
               <div className="sf-co-side">
@@ -651,7 +605,7 @@ export function CheckoutFlow({
                   {(config.payment?.cod ?? true) && <button
                     type="button"
                     className={`sf-co-method ${method === "cod" ? "is-active" : ""}`}
-                    disabled={!locked}
+                    disabled={processing !== null}
                     onClick={() => setMethod("cod")}
                   >
                     <span className="sf-co-method-icon"><IconPackage /></span>
@@ -665,7 +619,7 @@ export function CheckoutFlow({
                   <button
                     type="button"
                     className={`sf-co-method ${method === "card" ? "is-active" : ""}`}
-                    disabled={!locked || !(config.payment?.online ?? true)}
+                    disabled={processing !== null || !(config.payment?.online ?? true)}
                     onClick={() => setMethod("card")}
                   >
                     <span className="sf-co-method-icon"><IconCard /></span>
@@ -679,6 +633,12 @@ export function CheckoutFlow({
 
                 <div className="sf-co-card sf-co-summary">
                   <h2 className="sf-co-card-title">{t(locale, "checkout.title")}</h2>
+                  <div className="sf-co-order-lines">
+                    {lines.map((line) => <div className="sf-co-line" key={`${line.productId}:${line.variantId ?? "simple"}`}>
+                      <div className="sf-co-line-name">{line.name}{line.variant && <span className="sf-co-line-variant">{line.variant}</span>}</div>
+                      <div className="sf-co-line-side"><span className="sf-co-line-qty">×{line.qty}</span><span className="sf-co-line-price">{money(line.unitPrice * line.qty)}</span></div>
+                    </div>)}
+                  </div>
                   <label className={`sf-co-coupon${couponError ? " is-error" : ""}`}>
                     <span>{t(locale, "checkout.couponLabel")}</span>
                     <input
@@ -715,18 +675,27 @@ export function CheckoutFlow({
                 </div>
 
                 {checkoutError && <p className="sf-co-error" role="alert">{checkoutError}</p>}
+                <label ref={policyRef} className={`sf-co-policy sf-co-policy-final ${policies ? "is-checked" : ""} ${policiesError ? "is-error" : ""}`}>
+                  <input
+                    type="checkbox"
+                    checked={policies}
+                    onChange={(event) => { setPolicies(event.target.checked); setPoliciesError(false); }}
+                  />
+                  <span className="sf-co-policy-box">{policies && <IconCheck />}</span>
+                  <span className="sf-co-policy-text">
+                    {t(locale, "checkout.policiesPrefix")} <a href="/terms" target="_blank" rel="noopener">{t(locale, "checkout.termsLink")}</a> {t(locale, "checkout.policiesAnd")} <a href="/privacy" target="_blank" rel="noopener">{t(locale, "checkout.privacyLink")}</a>.
+                    {policiesError && <small role="alert">{t(locale, "checkout.policiesRequired")}</small>}
+                  </span>
+                </label>
                 <button
                   type="button"
-                  className={`ds-btn ds-btn-primary sf-co-pay ${locked && method ? "is-ready" : ""}`}
-                  disabled={!locked || !method || processing !== null}
-                  onClick={() => void placeOrder()}
+                  className={`ds-btn ds-btn-primary sf-co-pay ${method ? "is-ready" : ""}`}
+                  disabled={!method || processing !== null}
+                  aria-busy={processing !== null || undefined}
+                  onClick={() => { if (validateCheckout()) void placeOrder(); }}
                 >
-                  {!quote ? t(locale, "checkout.reviewOrder")
-                    : method === "cod" ? t(locale, "checkout.confirmOrder", money(total))
-                      : t(locale, "checkout.pay", money(total))}
+                  {method === "cod" ? t(locale, "checkout.confirmOrder", money(total)) : t(locale, "checkout.pay", money(total))}
                 </button>
-
-                {quote && <p className="sf-co-saved" role="status">{t(locale, "checkout.reviewReady")}</p>}
                 <div className="sf-co-secure">
                   <LockIcon />
                   {t(locale, "checkout.secure")}
@@ -743,17 +712,6 @@ export function CheckoutFlow({
 /* ------------------------------------------------------------------ */
 /* sub-components                                                     */
 /* ------------------------------------------------------------------ */
-
-function StepChip({ n, done, active, label }: { n: number; done: boolean; active: boolean; label: string }) {
-  return (
-    <div className="sf-co-step">
-      <span className={`sf-co-step-circle ${done ? "is-done" : active ? "is-active" : ""}`}>
-        {done ? <IconCheck /> : n}
-      </span>
-      <span className={`sf-co-step-label ${active ? "is-active" : done ? "is-done" : ""}`}>{label}</span>
-    </div>
-  );
-}
 
 function Confirmation({
   order,
@@ -986,6 +944,7 @@ function Field({
   options = [],
   placeholder,
   className = "",
+  autoComplete,
 }: {
   label: string;
   value: string;
@@ -998,6 +957,7 @@ function Field({
   options?: readonly string[];
   placeholder?: string;
   className?: string;
+  autoComplete?: string;
 }) {
   const cls = `sf-co-field ${error ? "is-error" : ""} ${readOnly ? "is-locked" : ""} ${className}`.trim();
   if (select) {
@@ -1007,6 +967,7 @@ function Field({
         <select
           value={value}
           disabled={readOnly}
+          autoComplete={autoComplete}
           onChange={(e) => onChange(e.target.value)}
         >
           <option value="">{placeholder ?? ""}</option>
@@ -1027,6 +988,7 @@ function Field({
         inputMode={inputMode}
         readOnly={readOnly}
         placeholder={placeholder}
+        autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
       />
       <FieldError msg={error} />
